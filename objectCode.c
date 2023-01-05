@@ -18,10 +18,11 @@ void objectCode(struct codenode *head)
     fprintf(fp,".globl main0\n");
     fprintf(fp,".text\n");
     fprintf(fp, "main0:\n");
-    // fprintf(fp, " addi $sp, $sp, -main\n");
-    fprintf(fp, " jal main\n");
+    fprintf(fp, "  jal main\n");
+    // use to finish the main fuction
     fprintf(fp, "  li $v0, 10\n");
     fprintf(fp, "  syscall\n");
+    // read function
     fprintf(fp,"read:\n");
     fprintf(fp,"  li $v0,4\n");
     fprintf(fp,"  la $a0,_Prompt\n");
@@ -29,6 +30,7 @@ void objectCode(struct codenode *head)
     fprintf(fp,"  li $v0,5\n");
     fprintf(fp,"  syscall\n");
     fprintf(fp,"  jr $ra\n");
+    // write fuction
     fprintf(fp,"write:\n");
     fprintf(fp,"  li $v0,1\n");
     fprintf(fp,"  syscall\n");
@@ -45,7 +47,7 @@ void objectCode(struct codenode *head)
                         else {
                             fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
                             fprintf(fp, "  move $t3, $t1\n");
-                            }
+                        }
                         fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
                         break;
             case PLUS:
@@ -134,7 +136,6 @@ void objectCode(struct codenode *head)
         }
     h=h->next;
     } while (h!=head);
-    fprintf(fp,"  li $v0, 10\n");
-    fprintf(fp,"  syscall\n");
+
     fclose(fp);
 }

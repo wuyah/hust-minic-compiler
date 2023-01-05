@@ -5,6 +5,7 @@ void Exp(struct ASTNode *T)
     int rtn,num,width;
     struct ASTNode *T0;
     struct opn opn1,opn2,result;
+    int op;
 if (T)
 {
 	switch (T->kind)
@@ -69,7 +70,7 @@ if (T)
                 T->code=merge(2,T->code,genIR(ASSIGNOP,opn1,opn2,result));
             }
             break;
-    // TODO
+    // TODO this part is used to calculate the boolExp's value
 	case AND:   //按算术表达式方式计算布尔值，未写完
 	case OR:    //按算术表达式方式计算布尔值，未写完
 	case RELOP: //按算术表达式方式计算布尔值，未写完
@@ -77,6 +78,34 @@ if (T)
             T->Exp1->offset=T->Exp2->offset=T->offset;
             Exp(T->Exp1);
             Exp(T->Exp2);
+            // create Temp Symbol
+            T->place=fill_Temp(newTemp(),LEV,T->type,'T',T->offset+T->Exp1->width+T->Exp2->width);
+            opn1.kind=ID; strcpy(opn1.id,symbolTable.symbols[T->Exp1->place].alias);
+            opn1.type = T->Exp1->type; opn1.offset=symbolTable.symbols[T->Exp1->place].offset;
+            opn2.kind=ID; strcpy(opn2.id,symbolTable.symbols[T->Exp2->place].alias);
+            opn2.type = T->Exp1->type; opn2.offset=symbolTable.symbols[T->Exp2->place].offset;
+            // the result is the created temp symbol 
+            result.kind = ID; strcpy(result.id,symbolTable.symbols[T->place].alias);
+            result.type=T->type;
+            result.offset=symbolTable.symbols[T->place].offset;
+            // T->code=merge(3,T->Exp1->code,T->Exp2->code,genIR(T->type_id,opn1,opn2,result));
+            // T->width=T->Exp1->width+T->Exp2->width+(T->type==INT?4:8);
+            // can't use 
+            if (strcmp(T->type_id,"<")==0)
+                        T->kind = EXP_JLT;
+                else if (strcmp(T->type_id,"<=")==0)
+                        T->kind = EXP_JLE;
+                else if (strcmp(T->type_id,">")==0)
+                        T->kind = EXP_JGT;
+                else if (strcmp(T->type_id,">=")==0)
+                        T->kind = EXP_JGE;
+                else if (strcmp(T->type_id,"==")==0)
+                        T->kind = EXP_EQ;
+                else if (strcmp(T->type_id,"!=")==0)
+                        T->kind = EXP_NEQ;
+
+            T->code=merge(3,T->Exp1->code,T->Exp2->code,genIR(T->kind,opn1,opn2,result));
+            T->width=T->Exp1->width+T->Exp2->width+(T->type==INT?4:8);
             break;
 	case PLUS:
 	case MINUS:

@@ -2,7 +2,7 @@
 
 A minic-compiler based on mini-c language, the framework of this repo is based on hust Dr.Zhu's work.
 
-The compile runnig on ubuntu 20.04 with flex & bison env.
+The compile runnig on ubuntu 20.04 with flex & bison env, gcc 9.4.0 (gcc3.4.0 is required).
 
 To get flex & bison, please use
 

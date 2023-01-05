@@ -68,6 +68,16 @@ void display(struct ASTNode *T,int indent)
                         printf("%*c循环体:(%d)\n",indent+3,' ',T->pos);
                         display(T->Body,indent+6);      //显示循环体
                         break;
+    case FOR:
+                        printf("%*cFOR循环语句:(%d)\n",indent,' ',T->pos);
+                        printf("%*c循环条件:\n",indent+3,' ');
+                        display(T->Exp2,indent+6);      //显示循环条件
+                        printf("%*cSTRAT UTTER:\n",indent+3,' ');
+                        display(T->Exp1,indent+6);
+                        printf("%*cSTEP UTTER:\n",indent+3,' ');
+                        display(T->Exp3,indent+6);
+                        display(T->Body,indent+6);      //显示循环体
+                        break;
 	case IF_THEN:       printf("%*c条件语句(IF_THEN):(%d)\n",indent,' ',T->pos);
                         printf("%*c条件:\n",indent+3,' ');
                         display(T->Cond,indent+6);      //显示条件
@@ -94,13 +104,12 @@ void display(struct ASTNode *T,int indent)
                         while (T0) {
                             if (T0->Dec->kind==ID)
                                 printf("%*c %s\n",indent+6,' ',T0->Dec->type_id);
-                            else if (T0->Dec->kind==ASSIGNOP)
-                                {
+                            else if (T0->Dec->kind==ASSIGNOP){
                                 printf("%*c %s ASSIGNOP\n ",indent+6,' ',T0->Dec->Dec->type_id);
                                 display(T0->Dec->Exp1,indent+strlen(T0->Dec->Dec->type_id)+7);        //显示初始化表达式
-                                }
-                            T0=T0->DecList;
                             }
+                            T0=T0->DecList;
+                        }
                         break;
 	case ID:	        printf("%*cID:%s\n",indent,' ',T->type_id);
                         break;
@@ -121,6 +130,8 @@ void display(struct ASTNode *T,int indent)
                     display(T->Exp2,indent+3);
                     break;
 	case NOT:
+    case DPLUS:
+    case DMINUS:
 	case UMINUS:    printf("%*c%s\n",indent,' ',T->type_id);
                     display(T->Exp1,indent+3);
                     break;
@@ -136,9 +147,12 @@ void display(struct ASTNode *T,int indent)
                         printf("%*c第%d个实际参数表达式:\n",indent,' ',i++);
                         display(T0,indent+3);
                         T=T->Args;
-                        }
+                    }
                     printf("\n");
                     break;
-         }
-      }
+    default:
+                    printf("Unknow Node!\n");
+                    break;
+        }
+    }
 }

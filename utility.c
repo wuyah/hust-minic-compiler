@@ -76,13 +76,14 @@ struct codenode *merge(int num,...){
     while (--num>0) {
         h2=va_arg(ap,struct codenode *);
         if (h1==NULL) h1=h2;
-        else if (h2){
-            t1=h1->prior;
-            t2=h2->prior;
-            t1->next=h2;
-            t2->next=h1;
-            h1->prior=t2;
-            h2->prior=t1;
+        else 
+            if (h2){
+                t1=h1->prior;
+                t2=h2->prior;
+                t1->next=h2;
+                t2->next=h1;
+                h1->prior=t2;
+                h2->prior=t1;
             }
         }
     va_end(ap);
@@ -137,6 +138,21 @@ void prnIR(struct codenode *head)
             case EQ:       printf("  IF %s == %s GOTO %s\n",opnstr1,opnstr2,resultstr);
                            break;
             case NEQ:      printf("  IF %s != %s GOTO %s\n",opnstr1,opnstr2,resultstr);
+                           break;
+            case EXP_JLE:
+                           printf("  %s := %s <= %s\n",resultstr,opnstr1,opnstr2);
+                           break;
+            case EXP_JLT:
+                           printf("  %s := %s <= %s\n",resultstr,opnstr1,opnstr2);
+                           break;  
+            case EXP_JGE:
+                           printf("  %s := %s <= %s\n",resultstr,opnstr1,opnstr2);
+                           break;  
+            case EXP_JGT:
+                           printf("  %s := %s <= %s\n",resultstr,opnstr1,opnstr2);
+                           break;  
+            case EXP_EQ:
+                           printf("  %s := %s <= %s\n",resultstr,opnstr1,opnstr2);
                            break;
             case ARG:      printf("  ARG %s\n",h->result.id);
                            break;

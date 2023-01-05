@@ -1,3 +1,5 @@
+#pragma once
+
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
@@ -19,13 +21,13 @@ struct opn{
         };
     int level;                  //变量的层号，0表示是全局变量，数据保存在静态数据区
     int offset;                 //偏移量，目标代码生成时用
-    };
+};
 
 struct codenode {   //三地址TAC代码结点,采用单链表存放中间语言代码
         int  op;
         struct opn opn1,opn2,result;
         struct codenode  *next,*prior;
-    };
+};
 
 typedef struct ASTNode {
         //以下对结点属性定义没有考虑存储效率，只是简单地列出要用到的一些属性
@@ -83,18 +85,18 @@ struct symbol {     //这里只列出了一个符号表项的部分属性，没�
     char flag;      //符号标记，函数：'F'  变量：'V'   参数：'P'  临时变量：'T'
     char offset;    //外部变量和局部变量在其静态数据区或活动记录中的偏移量，或记录函数活动记录大小，目标代码生成时使用
     //函数入口...
-    };
+};
 //符号表
 struct symboltable{
     struct symbol symbols[MAXLENGTH];
     int index;
-    } symbolTable;
+} symbolTable;
 
 struct symbol_scope_begin {
     //当前作用域的符号在符号表的起始位置序号,这是一个栈结构
     int TX[30];
     int top;
-    } symbol_scope_TX;
+} symbol_scope_TX;
 
 
 struct ASTNode * mknode(int num,int kind,int pos,...);
@@ -104,3 +106,23 @@ void boolExp(struct ASTNode *T);
 void Exp(struct ASTNode *T);
 void objectCode(struct codenode *head);
 
+char *strcat0(char *s1,char *s2);
+char *newAlias();
+
+// function for generate IR
+struct codenode *genIR(int op,struct opn opn1,struct opn opn2,struct opn result);
+struct codenode *genLabel(char *label);
+struct codenode *genGoto(char *label);
+struct codenode *merge(int num,...);
+void prnIR(struct codenode *head);
+
+// function for update symboltable
+char *newLabel();
+char *newTemp();
+int searchSymbolTable(char *name);
+int fillSymbolTable(char *name,char *alias,int level,int type,char flag,int offset);
+int fill_Temp(char *name,int level,int type,char flag,int offset);
+void prn_symbol();
+int  match_param(int i,struct ASTNode *T);
+
+void semantic_error(int line,char *msg1,char *msg2);

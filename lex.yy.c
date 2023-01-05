@@ -528,7 +528,7 @@ typedef union {
 	int type_int;
 	int type_float;
 	char type_id[32];
-//	struct ASTNode *ptr;
+	// struct ASTNode *ptr;
 } YYLVAL;
 #define YYSTYPE YYLVAL
 int lastToken;
@@ -857,133 +857,133 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 42 "lex.l"
+#line 41 "lex.l"
 {strcpy(yylval.type_id,  yytext); return ID;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 43 "lex.l"
+#line 42 "lex.l"
 {return SEMI;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 44 "lex.l"
+#line 43 "lex.l"
 {return COMMA;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 45 "lex.l"
+#line 44 "lex.l"
 {strcpy(yylval.type_id, yytext);;return RELOP;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 46 "lex.l"
+#line 45 "lex.l"
 {return ASSIGNOP;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 47 "lex.l"
+#line 46 "lex.l"
 {return DPLUS;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 48 "lex.l"
+#line 47 "lex.l"
 {return PLUS;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 49 "lex.l"
+#line 48 "lex.l"
 {return MINUS;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 50 "lex.l"
+#line 49 "lex.l"
 {return DMINUS;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 51 "lex.l"
+#line 50 "lex.l"
 {return STAR;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 52 "lex.l"
+#line 51 "lex.l"
 {return DIV;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 53 "lex.l"
+#line 52 "lex.l"
 {return AND;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 54 "lex.l"
+#line 53 "lex.l"
 {return OR;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 55 "lex.l"
+#line 54 "lex.l"
 {return NOT;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 56 "lex.l"
+#line 55 "lex.l"
 {return LP;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 57 "lex.l"
+#line 56 "lex.l"
 {return RP;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 58 "lex.l"
+#line 57 "lex.l"
 {return LC;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 59 "lex.l"
+#line 58 "lex.l"
 {return RC;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 60 "lex.l"
-{return LS;}
+#line 59 "lex.l"
+{return LB;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 61 "lex.l"
-{return RS;}
+#line 60 "lex.l"
+{return RB;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 62 "lex.l"
+#line 61 "lex.l"
 {yylval.type_int=atoi(yytext);  return INT;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 63 "lex.l"
+#line 62 "lex.l"
 {yylval.type_float=atof(yytext);return FLOAT;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 64 "lex.l"
+#line 63 "lex.l"
 {}   
 	YY_BREAK
 case 31:
 /* rule 31 can match eol */
 YY_RULE_SETUP
-#line 66 "lex.l"
+#line 65 "lex.l"
 {yycolumn=1;}   
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 67 "lex.l"
+#line 66 "lex.l"
 {printf("Error type A :Mysterious character \"%s\"\n\t at Line %d\n",yytext,yylineno);}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 69 "lex.l"
+#line 68 "lex.l"
 ECHO;
 	YY_BREAK
 #line 990 "lex.yy.c"
@@ -2003,7 +2003,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 69 "lex.l"
+#line 68 "lex.l"
 
 
 /* 和bison联用时，不需要这部分

@@ -16,7 +16,7 @@ typedef union {
 	int type_int;
 	int type_float;
 	char type_id[32];
-//	struct ASTNode *ptr;
+	// struct ASTNode *ptr;
 } YYLVAL;
 #define YYSTYPE YYLVAL
 int lastToken;
@@ -38,7 +38,6 @@ floatconst  [0-9]*\.?[0-9]?([eE][-+]?[0-9]+)?
 "for"       {return FOR;}
 
 
-
 {id}        				{strcpy(yylval.type_id,  yytext); return ID;}
 ";"		  					{return SEMI;}
 ","		  					{return COMMA;}
@@ -57,8 +56,8 @@ floatconst  [0-9]*\.?[0-9]?([eE][-+]?[0-9]+)?
 ")"							{return RP;}
 "{"							{return LC;}
 "}"							{return RC;}
-"["							{return LS;}
-"]"							{return RS;}
+"["							{return LB;}
+"]"							{return RB;}
 {intconst}          {yylval.type_int=atoi(yytext);  return INT;}
 {floatconst}        {yylval.type_float=atof(yytext);return FLOAT;}
 [ \r\t]             {}   
