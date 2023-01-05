@@ -51,6 +51,15 @@ label3:
   lw $t1, 32($sp)
   move $t3, $t1
   sw $t3, 28($sp)
+  li $t3, 1
+  sw $t3, 28($sp)
+  lw $t1, 12($sp)
+  lw $t2, 28($sp)
+  add $t3,$t1,$t2
+  sw $t3, 32($sp)
+  lw $t1, 32($sp)
+  move $t3, $t1
+  sw $t3, 12($sp)
   j label4
 label2:
   li $t3, 0

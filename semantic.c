@@ -301,7 +301,7 @@ void semantic_Analysis(struct ASTNode *T)
                 semantic_Analysis(T->Exp1);
                 strcpy(T->Exp2->Etrue,newLabel());  //子结点继承属性的计算
                 strcpy(T->Exp2->Efalse,T->Snext);
-                T->Exp2->offset=T->Body->offset=T->offset;
+                T->Exp1->offset=T->Exp3->offset=T->Exp2->offset=T->Body->offset=T->offset;
                 boolExp(T->Exp2);
                 T->width = T->Exp2->width;
                 strcpy(T->Exp3->Snext,newLabel());
