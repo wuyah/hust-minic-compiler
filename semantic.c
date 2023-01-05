@@ -309,9 +309,9 @@ void semantic_Analysis(struct ASTNode *T)
                 semantic_Analysis(T->Exp3);
                 if (T->width < (T->Body->width + T->Exp3->width)) T->width=T->Body->width + T->Exp3->width;
                 
-                // Exp1 -> label -> condition(Exp2) -> Goto Next -> Body -> Exp3 Next
-                T->code=merge(6,T->Exp1->code,genLabel(T->Exp3->Snext),T->Exp2->code, \
-                    genLabel(T->Exp2->Etrue), T->Body->code, genGoto(T->Exp3->Snext));
+                // Exp1 -> label -> condition(Exp2) -> Goto Next -> Body -> Exp3 ->Exp3 Next
+                T->code=merge(7,T->Exp1->code,genLabel(T->Exp3->Snext),T->Exp2->code, \
+                    genLabel(T->Exp2->Etrue), T->Body->code, T->Exp3->code,genGoto(T->Exp3->Snext));
                 break;
     case EXP_STMT:
                 T->Exp1->offset=T->offset;
