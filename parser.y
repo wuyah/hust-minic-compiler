@@ -62,10 +62,10 @@ ExtDefList: {$$=NULL;}
         ;  
 ExtDef:   Specifier ExtDecList SEMI   {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=EXT_VAR_DEF;
                                $$->pos=yylineno;   $$->Specifier=$1;$$->DecList=$2;}                               //该结点对应外部声明
-         |Specifier FuncDec CompSt   {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=FUNC_DEF;  
+        |Specifier FuncDec CompSt   {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=FUNC_DEF;  
                                 $$->Specifier=$1;$$->FuncDec=$2;$$->Body=$3;
 		$$->pos=$$->Body->pos=$$->Specifier->pos;  }  //该结点对应一个函数定义
-         | error SEMI   {$$=NULL;}
+        | error SEMI   {$$=NULL;}
         ;
 Specifier:  TYPE    {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=TYPE;             //生成类型结点，目前仅基本类型
 	             $$->pos=yylineno; strcpy($$->type_id,$1);$$->type=!strcmp($1,"int")?INT:FLOAT;}   

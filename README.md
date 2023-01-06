@@ -30,10 +30,10 @@ current finished:
 - add `for loop` display and `for loop` object code
 - add logical operation in expression like `a = a<b`
 - add semantic error type not match
+- float calculate
 
 TODO:
-- float calculate
 - NOT DPLUS DMINUS calculate
 - array expression
 - struct expression
-
+- type error in function return

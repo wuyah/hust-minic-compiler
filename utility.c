@@ -157,6 +157,9 @@ void prnIR(struct codenode *head)
             case EXP_NEQ:
                            printf("  %s := %s != %s\n",resultstr,opnstr1,opnstr2);
                            break;
+            case NOT:
+                            printf("  %s := ! %s\n", resultstr, opnstr1);
+                            break;
             case ARG:      printf("  ARG %s\n",h->result.id);
                            break;
             case CALL:     if (!strcmp(opnstr1,"write"))
@@ -169,7 +172,6 @@ void prnIR(struct codenode *head)
                            else
                                 printf("  RETURN\n");
                            break;
-
         }
         h=h->next;
     } while (h!=head);

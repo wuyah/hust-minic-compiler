@@ -351,6 +351,8 @@ void semantic_Analysis(struct ASTNode *T)
 	case DIV:
 	case NOT:
 	case UMINUS:
+    case DPLUS:
+    case DMINUS:
     case FUNC_CALL:
                     Exp(T);          //处理基本表达式
                     break;

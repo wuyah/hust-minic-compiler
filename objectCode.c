@@ -197,7 +197,6 @@ void objectCode(struct codenode *head)
                 }
             }
             break;
-        // TODO
         case EXP_JLE:
         case EXP_JLT:
         case EXP_JGE:
@@ -238,7 +237,6 @@ void objectCode(struct codenode *head)
                 fprintf(fp, "  mfc1 $t1, $f1\n");
                 fprintf(fp, "  mfc1 $t2, $f2\n");
             }
-
             // use instruction stl
             // slt $1,$2,$3 -> if($2<$3)$1=1;else $1=0
             // sge sne is like slt
@@ -256,6 +254,24 @@ void objectCode(struct codenode *head)
                 fprintf(fp, "  sne $t3, $t1, $t2\n");
             fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
 
+            break;
+        case NOT:
+            // TODO
+            // convert to float and 
+            if(h->opn1.kind==INT)
+            {
+                fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
+                fprintf(fp, "  sne $t3, $t1, $zero\n");
+            }else{
+                fprintf(fp, "  l.s $f1, %d($sp)\n", h->opn1.offset);
+                fprintf(fp, "  li.s $f2, 0.0\n");
+                fprintf(fp, "  c.eq.s $f1, $f2\n");
+                // if f1 == 0, t0 != 0 t3 = 1 else t3 = 0
+                fprintf(fp, "  cfc1 $t0, $31\n");
+                fprintf(fp, "  sne $t3, $t0, $zero\n");
+                // if opn1 == 0, it is true, then res should be 1
+            }
+            fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
             break;
         case ARG: // 直接跳到后面一条,直到函数调用，回头反查参数。
             break;

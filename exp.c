@@ -136,7 +136,7 @@ void Exp(struct ASTNode *T)
         case DIV:
             T->Exp1->offset = T->offset;
             Exp(T->Exp1);
-            T->Exp2->offset = T->offset + T->Exp1->width;
+            T->Exp2->offset= T->offset + T->Exp1->offset;
             Exp(T->Exp2);
             // 判断T->Exp1，T->Exp2类型是否正确，可能根据运算符生成不同形式的代码，给T的type赋值
             // 下面的类型属性计算，没有考虑错误处理情况
@@ -164,9 +164,25 @@ void Exp(struct ASTNode *T)
             break;
         //  TODO
         case NOT: // 未写完整
-
+            T->Exp1->offset = T->offset;
+            T->kind = NOT;
+            Exp(T->Exp1);
+            T->place = fill_Temp(newTemp(), LEV, T->type, 'T', T->offset + T->Exp1->width);
+            opn1.kind = ID;
+            strcpy(opn1.id, symbolTable.symbols[T->Exp1->place].alias);
+            opn1.type = T->Exp1->type;
+            opn1.offset = symbolTable.symbols[T->Exp1->place].offset;
+            strcpy(result.id, symbolTable.symbols[T->place].alias);
+            result.type = T->type;
+            result.offset = symbolTable.symbols[T->place].offset;
+            T->code = merge(2, T->Exp1->code, genIR(T->kind, opn1, opn2, result));
+            T->width = T->Exp1->width + 4;
             break;
         case UMINUS: // 未写完整
+            break;
+        case DMINUS:
+            break;
+        case DPLUS:
             break;
         case FUNC_CALL: // 根据T->type_id查出函数的定义，如果语言中增加了实验教材的read，write需要单独处理一下
             rtn = searchSymbolTable(T->type_id);
