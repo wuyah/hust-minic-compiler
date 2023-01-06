@@ -3,27 +3,27 @@
 
 void ext_var_list(struct ASTNode *T)
 {  //处理变量列表
-int rtn;
-switch (T->kind){
-    case EXT_DEC_LIST:
-        T->Dec->type=T->type;                  //将类型属性向下传递变量结点
-        T->Dec->offset=T->offset;              //外部变量的偏移量向下传递
-        T->DecList->type=T->type;              //将类型属性向下传递变量结点
-        T->DecList->offset=T->offset+T->width; //外部变量的偏移量向下传递
-        T->DecList->width=T->width;
-        ext_var_list(T->Dec);
-        ext_var_list(T->DecList);
-        T->num=T->DecList->num+1;
-        break;
-    case ID:                                     //最后一个变量名
-        rtn=fillSymbolTable(T->type_id,newAlias(),LEV,T->type,'V',T->offset);
-        if (rtn==-1)
-            semantic_error(T->pos,T->type_id, "变量重复定义");
-        else 
-            T->place=rtn;
-        T->num=1;
-        break;
-    }
+    int rtn;
+    switch (T->kind){
+        case EXT_DEC_LIST:
+            T->Dec->type=T->type;                  //将类型属性向下传递变量结点
+            T->Dec->offset=T->offset;              //外部变量的偏移量向下传递
+            T->DecList->type=T->type;              //将类型属性向下传递变量结点
+            T->DecList->offset=T->offset+T->width; //外部变量的偏移量向下传递
+            T->DecList->width=T->width;
+            ext_var_list(T->Dec);
+            ext_var_list(T->DecList);
+            T->num = T->DecList->num+1;
+            break;
+        case ID:                                     //最后一个变量名
+            rtn=fillSymbolTable(T->type_id,newAlias(),LEV,T->type,'V',T->offset);
+            if (rtn==-1)
+                semantic_error(T->pos,T->type_id, "变量重复定义");
+            else 
+                T->place=rtn;
+            T->num=1;
+            break;
+        }
 }
 
 int  match_param(int i,struct ASTNode *T)
@@ -218,6 +218,9 @@ void semantic_Analysis(struct ASTNode *T)
                                 semantic_error(T0->Dec->Dec->pos,T0->Dec->Dec->type_id, "变量重复定义");
                             else
                             {
+                                int id_type = symbolTable.symbols[rtn].type;
+                                if((!(id_type==FLOAT && T->Exp2->type==INT)) && (id_type != T->Exp2->type))
+                                    semantic_error(T0->Dec->Dec->pos,T0->Dec->Dec->type_id, "VarDec Assign Type error!");
                                 T0->Dec->place=rtn;
                                 T0->Dec->Exp2->offset=T->offset+T->width+width;
                                 Exp(T0->Dec->Exp2);
@@ -311,7 +314,7 @@ void semantic_Analysis(struct ASTNode *T)
                 
                 // Exp1 -> label -> condition(Exp2) -> Goto Next -> Body -> Exp3 ->Exp3 Next
                 T->code=merge(7,T->Exp1->code,genLabel(T->Exp3->Snext),T->Exp2->code, \
-                    genLabel(T->Exp2->Etrue), T->Body->code, T->Exp3->code,genGoto(T->Exp3->Snext));
+                    genLabel(T->Exp2->Etrue), T->Body->code, T->Exp3->code, genGoto(T->Exp3->Snext));
                 break;
     case EXP_STMT:
                 T->Exp1->offset=T->offset;

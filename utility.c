@@ -143,16 +143,19 @@ void prnIR(struct codenode *head)
                            printf("  %s := %s <= %s\n",resultstr,opnstr1,opnstr2);
                            break;
             case EXP_JLT:
-                           printf("  %s := %s <= %s\n",resultstr,opnstr1,opnstr2);
+                           printf("  %s := %s < %s\n",resultstr,opnstr1,opnstr2);
                            break;  
             case EXP_JGE:
-                           printf("  %s := %s <= %s\n",resultstr,opnstr1,opnstr2);
+                           printf("  %s := %s >= %s\n",resultstr,opnstr1,opnstr2);
                            break;  
             case EXP_JGT:
-                           printf("  %s := %s <= %s\n",resultstr,opnstr1,opnstr2);
+                           printf("  %s := %s > %s\n",resultstr,opnstr1,opnstr2);
                            break;  
             case EXP_EQ:
-                           printf("  %s := %s <= %s\n",resultstr,opnstr1,opnstr2);
+                           printf("  %s := %s == %s\n",resultstr,opnstr1,opnstr2);
+                           break;
+            case EXP_NEQ:
+                           printf("  %s := %s != %s\n",resultstr,opnstr1,opnstr2);
                            break;
             case ARG:      printf("  ARG %s\n",h->result.id);
                            break;

@@ -91,7 +91,8 @@ void Exp(struct ASTNode *T)
         case OR:    // 按算术表达式方式计算布尔值，未写完
         case RELOP: // 按算术表达式方式计算布尔值，未写完
             T->type = INT;
-            T->Exp1->offset = T->Exp2->offset = T->offset;
+            T->Exp1->offset = T->offset;
+            T->Exp2->offset = T->offset + T->Exp1->width;
             Exp(T->Exp1);
             Exp(T->Exp2);
             // create Temp Symbol
@@ -100,9 +101,10 @@ void Exp(struct ASTNode *T)
             strcpy(opn1.id, symbolTable.symbols[T->Exp1->place].alias);
             opn1.type = T->Exp1->type;
             opn1.offset = symbolTable.symbols[T->Exp1->place].offset;
+
             opn2.kind = ID;
             strcpy(opn2.id, symbolTable.symbols[T->Exp2->place].alias);
-            opn2.type = T->Exp1->type;
+            opn2.type = T->Exp2->type;
             opn2.offset = symbolTable.symbols[T->Exp2->place].offset;
             // the result is the created temp symbol
             result.kind = ID;
@@ -126,7 +128,7 @@ void Exp(struct ASTNode *T)
                 T->kind = EXP_NEQ;
 
             T->code = merge(3, T->Exp1->code, T->Exp2->code, genIR(T->kind, opn1, opn2, result));
-            T->width = T->Exp1->width + T->Exp2->width + (T->type == INT ? 4 : 8);
+            T->width = T->Exp1->width + T->Exp2->width + 4;
             break;
         case PLUS:
         case MINUS:
@@ -156,7 +158,9 @@ void Exp(struct ASTNode *T)
             result.type = T->type;
             result.offset = symbolTable.symbols[T->place].offset;
             T->code = merge(3, T->Exp1->code, T->Exp2->code, genIR(T->kind, opn1, opn2, result));
-            T->width = T->Exp1->width + T->Exp2->width + (T->type == INT ? 4 : 8);
+            // T->width = T->Exp1->width + T->Exp2->width + (T->type == INT ? 4 : 8);
+            T->width = T->Exp1->width + T->Exp2->width + 4;
+
             break;
         //  TODO
         case NOT: // 未写完整

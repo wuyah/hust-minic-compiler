@@ -2257,7 +2257,7 @@ int main(int argc, char *argv[]){
 	yylineno=1;
 	yyparse();
 	return 0;
-	}
+}
 #include<stdarg.h>
 void yyerror(const char* fmt, ...)
 {
