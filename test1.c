@@ -1,8 +1,9 @@
 int main()
 {
-    float a=1.1+2;
+    float a;
     int b;
+    a = 0.0;
     b=2;
-    b = a>b;
+    b = !a;
     return 0;
 }
