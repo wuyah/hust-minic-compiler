@@ -90,6 +90,33 @@ void objectCode(struct codenode *head)
                         else if (h->op==EQ)  fprintf(fp, "  beq $t1,$t2,%s\n", h->result.id);
                         else                 fprintf(fp, "  bne $t1,$t2,%s\n", h->result.id);
                         break;
+            // TODO
+            case EXP_JLE:
+            case EXP_JLT:
+            case EXP_JGE:
+            case EXP_JGT:
+            case EXP_EQ:
+            case EXP_NEQ:
+                        // get the value of two opn
+                        fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
+                        fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
+                        // use instruction stl
+                        // slt $1,$2,$3 -> if($2<$3)$1=1;else $1=0
+                        // sge sne is like slt
+                        if(h->op==EXP_JLE)
+                            fprintf(fp, "  sle $t3, $t1, $t2\n");
+                        else if(h->op==EXP_JLT)
+                            fprintf(fp, "  slt $t3, $t1, $t2\n");
+                        else if(h->op==EXP_JGE)
+                            fprintf(fp, "  sge $t3, $t1, $t2\n");
+                        else if(h->op==EXP_JGT)
+                            fprintf(fp, "  sgt $t3, $t1, $t2\n");
+                        else if(h->op==EXP_EQ)
+                            fprintf(fp, "  seq $t3, $t1, $t2\n");
+                        else
+                            fprintf(fp, "  sne $t3, $t1, $t2\n");
+                        fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
+                        break;
             case ARG:   //直接跳到后面一条,直到函数调用，回头反查参数。
                         break;
             case CALL:  if (!strcmp(h->opn1.id,"read")){ //特殊处理read
