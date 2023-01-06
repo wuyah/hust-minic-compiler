@@ -21,7 +21,19 @@ to run this silmulator, use
 ```
 java -jar Mars4_5.jar
 ```
+> _Notice_<br>
+    I change the running platform to QTspim as the MARS can't support float immediate number. Which is not good enough for float design. <br>
+    To get QTspim, please see: http://pages.cs.wisc.edu/~larus/spim.html a GUI version is prefered to get.
 
 current finished:
 
-- [] add for loop
+- add `for loop` display and `for loop` object code
+- add logical operation in expression like `a = a<b`
+- add semantic error type not match
+
+TODO:
+- float calculate
+- NOT DPLUS DMINUS calculate
+- array expression
+- struct expression
+
