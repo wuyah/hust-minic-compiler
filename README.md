@@ -21,3 +21,7 @@ to run this silmulator, use
 ```
 java -jar Mars4_5.jar
 ```
+
+current finished:
+
+- [] add for loop
