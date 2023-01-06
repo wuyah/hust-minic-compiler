@@ -30,6 +30,7 @@ void Exp(struct ASTNode *T)
             T->place = fill_Temp(newTemp(), LEV, T->type, 'T', T->offset);
             T->type = INT;
             opn1.kind = INT;
+            opn1.type = INT;
             opn1.const_int = T->type_int;
             result.kind = ID;
             strcpy(result.id, symbolTable.symbols[T->place].alias);
@@ -41,12 +42,14 @@ void Exp(struct ASTNode *T)
             T->place = fill_Temp(newTemp(), LEV, T->type, 'T', T->offset);
             T->type = FLOAT;
             opn1.kind = FLOAT;
+            opn1.type = FLOAT;
             opn1.const_float = T->type_float;
             result.kind = ID;
             strcpy(result.id, symbolTable.symbols[T->place].alias);
             result.offset = symbolTable.symbols[T->place].offset;
             T->code = genIR(ASSIGNOP, opn1, opn2, result);
-            T->width = 8;
+            // float width in qtspim is 4
+            T->width = 4;
             break;
         case ASSIGNOP:
             if (T->Exp1->kind != ID)
@@ -78,9 +81,12 @@ void Exp(struct ASTNode *T)
                 T->width = T->Exp1->width + T->Exp2->width;
                 T->code = merge(2, T->Exp1->code, T->Exp2->code);
                 opn1.kind = ID; // 右值一定是个变量或常量生成的临时变量
+                // not add 
+                opn1.type = T->Exp1->type;
                 strcpy(opn1.id, symbolTable.symbols[T->Exp2->place].alias);
                 opn1.offset = symbolTable.symbols[T->Exp2->place].offset;
                 result.kind = ID;
+                result.type = T->type;
                 strcpy(result.id, symbolTable.symbols[T->Exp1->place].alias);
                 result.offset = symbolTable.symbols[T->Exp1->place].offset;
                 T->code = merge(2, T->code, genIR(ASSIGNOP, opn1, opn2, result));
@@ -126,7 +132,6 @@ void Exp(struct ASTNode *T)
                 T->kind = EXP_EQ;
             else if (strcmp(T->type_id, "!=") == 0)
                 T->kind = EXP_NEQ;
-
             T->code = merge(3, T->Exp1->code, T->Exp2->code, genIR(T->kind, opn1, opn2, result));
             T->width = T->Exp1->width + T->Exp2->width + 4;
             break;
@@ -145,22 +150,19 @@ void Exp(struct ASTNode *T)
             else
                 T->type = INT, T->width = T->Exp1->width + T->Exp2->width + 2;
             T->place = fill_Temp(newTemp(), LEV, T->type, 'T', T->offset + T->Exp1->width + T->Exp2->width);
-            opn1.kind = ID;
+            opn1.kind = ID; opn1.type = T->Exp1->type;
             strcpy(opn1.id, symbolTable.symbols[T->Exp1->place].alias);
-            opn1.type = T->Exp1->type;
             opn1.offset = symbolTable.symbols[T->Exp1->place].offset;
-            opn2.kind = ID;
+
+            opn2.kind = ID; opn2.type = T->Exp2->type;
             strcpy(opn2.id, symbolTable.symbols[T->Exp2->place].alias);
-            opn2.type = T->Exp2->type;
             opn2.offset = symbolTable.symbols[T->Exp2->place].offset;
-            result.kind = ID;
+            result.kind = ID;   result.type = T->type;
             strcpy(result.id, symbolTable.symbols[T->place].alias);
-            result.type = T->type;
             result.offset = symbolTable.symbols[T->place].offset;
             T->code = merge(3, T->Exp1->code, T->Exp2->code, genIR(T->kind, opn1, opn2, result));
             // T->width = T->Exp1->width + T->Exp2->width + (T->type == INT ? 4 : 8);
             T->width = T->Exp1->width + T->Exp2->width + 4;
-
             break;
         //  TODO
         case NOT: // 未写完整
@@ -173,7 +175,7 @@ void Exp(struct ASTNode *T)
             opn1.type = T->Exp1->type;
             opn1.offset = symbolTable.symbols[T->Exp1->place].offset;
             strcpy(result.id, symbolTable.symbols[T->place].alias);
-            result.type = T->type;
+            result.kind=ID; result.type = T->type;
             result.offset = symbolTable.symbols[T->place].offset;
             T->code = merge(2, T->Exp1->code, genIR(T->kind, opn1, opn2, result));
             T->width = T->Exp1->width + 4;
@@ -270,9 +272,11 @@ void boolExp(struct ASTNode *T)
             if (T->width < T->Exp2->width)
                 T->width = T->Exp2->width;
             opn1.kind = ID;
+            opn1.type = T->Exp1->type;
             strcpy(opn1.id, symbolTable.symbols[T->Exp1->place].alias);
             opn1.offset = symbolTable.symbols[T->Exp1->place].offset;
             opn2.kind = ID;
+            opn2.type = T->Exp2->type;
             strcpy(opn2.id, symbolTable.symbols[T->Exp2->place].alias);
             opn2.offset = symbolTable.symbols[T->Exp2->place].offset;
             result.kind = ID;
@@ -294,10 +298,11 @@ void boolExp(struct ASTNode *T)
             break;
         case AND:
         case OR:
+            printf("T->Efalse=%s\n", T->Efalse);
             if (T->kind == AND)
             {
                 strcpy(T->Exp1->Etrue, newLabel());
-                strcpy(T->Exp2->Efalse, T->Efalse);
+                strcpy(T->Exp1->Efalse, T->Efalse);
             }
             else
             {
