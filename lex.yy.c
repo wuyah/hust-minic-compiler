@@ -382,9 +382,9 @@ struct yy_trans_info
 static const flex_int16_t yy_accept[69] =
     {   0,
        29,   29,   34,   32,   30,   31,   21,   32,   22,   23,
-       17,   14,   10,   15,   29,   18,   28,    9,   11,   12,
+       17,   14,   10,   16,   29,   18,   28,    9,   11,   12,
        11,    8,    8,   26,   27,    8,    8,    8,    8,    8,
-       24,   32,   25,   11,   19,   13,   16,   29,    0,   29,
+       24,   32,   25,   11,   19,   13,   15,   29,    0,   29,
        28,    8,    0,    8,    8,    8,    8,    4,    8,    8,
         8,   20,   29,    8,    8,    7,    1,    8,    8,    5,
         8,    8,    8,    2,    8,    6,    3,    0
@@ -893,12 +893,12 @@ YY_RULE_SETUP
 case 15:
 YY_RULE_SETUP
 #line 48 "lex.l"
-{return MINUS;}
+{return DMINUS;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 49 "lex.l"
-{return DMINUS;}
+{return MINUS;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP

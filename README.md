@@ -34,7 +34,9 @@ current finished:
 - NOT calculate and NOT float calculate
 
 TODO:
-- DPLUS DMINUS calculate
+- DPLUS DMINUS calculate(they should only work for INT)
 - array expression
 - struct expression
 - type error in function return
+- AND OR operator(INT and FLOAT)
+- use ID to judge if the number is INT or FLOAT

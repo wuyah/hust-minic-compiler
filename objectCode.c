@@ -54,7 +54,9 @@ void objectCode(struct codenode *head)
             {
                 fprintf(fp, "  li.s $f3, %f\n", h->opn1.const_float);
                 fprintf(fp, "  s.s $f3, %d($sp)\n", h->result.offset);
-            }else{
+            }
+            else
+            {
                 fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
                 fprintf(fp, "  sw $t1, %d($sp)\n", h->result.offset);
             }
@@ -108,9 +110,23 @@ void objectCode(struct codenode *head)
                     fprintf(fp, "  mul.s $f3,$f1,$f2\n");
                 else
                     fprintf(fp, "  div.s $f3, $f1, $f2\n");
-
                 fprintf(fp, "  s.s $f3, %d($sp)\n", h->result.offset);
             }
+            break;
+        // TODO
+        case AND:
+        case OR:
+            fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
+            fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
+            // if t1 != 0 t1 = 1 else t1 =0
+            fprintf(fp, "  sne $t1, $t1, $zero\n");
+            fprintf(fp, "  sne $t2, $t2, $zero\n");
+            if (h->op == AND)
+                fprintf(fp, "  and $t3,$t1,$t2\n");
+            else
+                fprintf(fp, "  or $t3,$t1,$t2\n");
+
+            fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
             break;
         case FUNCTION:
             fprintf(fp, "\n%s:\n", h->result.id);
@@ -158,13 +174,16 @@ void objectCode(struct codenode *head)
                     fprintf(fp, "  cvt.s.w $f1, $f1\n");
                 }
                 else
-                    fprintf(fp, "  l.s $f1, %d($sp)\n", h->opn1.offset);
+                    fprintf(fp, "  l.s $f2, %d($sp)\n", h->opn1.offset);
                 if (h->opn2.type == INT)
                 {
                     fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
                     fprintf(fp, "  mtc1 $t2, $f2\n");
                     fprintf(fp, "  cvt.s.w $f2, $f2\n");
                 }
+                else
+                    fprintf(fp, "  l.s $f1, %d($sp)\n", h->opn2.offset);
+
                 if (h->op == JLE)
                 {
                     fprintf(fp, "  c.le.s $f1,$f2\n");
@@ -257,12 +276,14 @@ void objectCode(struct codenode *head)
             break;
         case NOT:
             // TODO
-            // convert to float and 
-            if(h->opn1.kind==INT)
+            // convert to float and
+            if (h->opn1.type == INT)
             {
                 fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
                 fprintf(fp, "  sne $t3, $t1, $zero\n");
-            }else{
+            }
+            else
+            {
                 fprintf(fp, "  l.s $f1, %d($sp)\n", h->opn1.offset);
                 fprintf(fp, "  li.s $f2, 0.0\n");
                 fprintf(fp, "  c.eq.s $f1, $f2\n");
@@ -324,6 +345,5 @@ void objectCode(struct codenode *head)
         }
         h = h->next;
     } while (h != head);
-
     fclose(fp);
 }

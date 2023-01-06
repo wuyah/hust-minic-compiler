@@ -1660,7 +1660,7 @@ yyreduce:
 
   case 6:
 #line 65 "parser.y"
-                                     {(yyval.ptr)=(ASTNode *)malloc(sizeof(ASTNode)); (yyval.ptr)->kind=FUNC_DEF;  
+                                    {(yyval.ptr)=(ASTNode *)malloc(sizeof(ASTNode)); (yyval.ptr)->kind=FUNC_DEF;  
                                 (yyval.ptr)->Specifier=(yyvsp[-2].ptr);(yyval.ptr)->FuncDec=(yyvsp[-1].ptr);(yyval.ptr)->Body=(yyvsp[0].ptr);
 		(yyval.ptr)->pos=(yyval.ptr)->Body->pos=(yyval.ptr)->Specifier->pos;  }
 #line 1667 "parser.tab.c"
@@ -1668,7 +1668,7 @@ yyreduce:
 
   case 7:
 #line 68 "parser.y"
-                        {(yyval.ptr)=NULL;}
+                       {(yyval.ptr)=NULL;}
 #line 1673 "parser.tab.c"
     break;
 

@@ -62,6 +62,8 @@ struct codenode *genLabel(char *label){
 struct codenode *genGoto(char *label){
     struct codenode *h=(struct codenode *)malloc(sizeof(struct codenode));
     h->op=GOTO;
+    if(!label)
+        printf("Label not exist!\n");
     strcpy(h->result.id,label);
     h->next=h->prior=h;
     return h;
@@ -157,9 +159,16 @@ void prnIR(struct codenode *head)
             case EXP_NEQ:
                            printf("  %s := %s != %s\n",resultstr,opnstr1,opnstr2);
                            break;
+            case AND:
+                           printf("  %s := %s && %s\n",resultstr,opnstr1,opnstr2);
+                            break;
+            case OR:
+                           printf("  %s := %s || %s\n",resultstr,opnstr1,opnstr2);
+                            break;
             case NOT:
                             printf("  %s := ! %s\n", resultstr, opnstr1);
                             break;
+            
             case ARG:      printf("  ARG %s\n",h->result.id);
                            break;
             case CALL:     if (!strcmp(opnstr1,"write"))
