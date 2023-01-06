@@ -32,6 +32,7 @@ current finished:
 - add semantic error type not match
 - float calculate
 - NOT calculate and NOT float calculate
+- if-else-then fixed
 
 TODO:
 - DPLUS DMINUS calculate(they should only work for INT)
