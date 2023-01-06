@@ -31,9 +31,10 @@ current finished:
 - add logical operation in expression like `a = a<b`
 - add semantic error type not match
 - float calculate
+- NOT calculate and NOT float calculate
 
 TODO:
-- NOT DPLUS DMINUS calculate
+- DPLUS DMINUS calculate
 - array expression
 - struct expression
 - type error in function return
