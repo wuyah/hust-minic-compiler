@@ -33,6 +33,8 @@ current finished:
 - float calculate
 - NOT calculate and NOT float calculate
 - if-else-then fixed
+- array dec/ array call ast finished 1.8
+- oneline comment finished using lex.l
 
 TODO:
 - DPLUS DMINUS calculate(they should only work for INT)
@@ -41,3 +43,4 @@ TODO:
 - type error in function return
 - AND OR operator(INT and FLOAT)
 - use ID to judge if the number is INT or FLOAT
+- annotation

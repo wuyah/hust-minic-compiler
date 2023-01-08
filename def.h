@@ -8,7 +8,7 @@
 #define MAXLENGTH   200
 #define DX 3*sizeof(int)          /*活动记录控制信息需要的单元数，这个根据实际系统调整*/
 
-int LEV;      //层号
+extern int LEV;      //层号
 
 struct opn{
     int kind;    //标识联合成员的属性
@@ -65,6 +65,7 @@ typedef struct ASTNode {
     union {//第4指针域
         struct ASTNode *Body;
     };
+    char* string;
     int place;                      //存放（临时）变量在符号表的位置序号
     char Etrue[15],Efalse[15];      //对布尔表达式的翻译时，真假转移目标的标号
     char Snext[15];                 //结点对应语句S执行后的下一条语句位置标号
@@ -87,17 +88,20 @@ struct symbol {     //这里只列出了一个符号表项的部分属性，没�
     //函数入口...
 };
 //符号表
-struct symboltable{
+typedef struct symboltable{
     struct symbol symbols[MAXLENGTH];
     int index;
-} symbolTable;
+} symboltable;
 
-struct symbol_scope_begin {
+extern symboltable symbolTable;
+
+typedef struct symbol_scope_begin {
     //当前作用域的符号在符号表的起始位置序号,这是一个栈结构
     int TX[30];
     int top;
-} symbol_scope_TX;
+} symbol_scope_begin;
 
+extern symbol_scope_begin symbol_scope_TX;
 
 struct ASTNode * mknode(int num,int kind,int pos,...);
 void semantic_Analysis0(struct ASTNode *T);

@@ -55,7 +55,7 @@ void display(struct ASTNode *T,int indent)
                         }
                         if (T->StmList)
                         {
-                            printf("%*c复合语句的语句部分：\n",indent+3,' ');
+                            printf("%*c复合语句的语句部分:\n",indent+3,' ');
                             display(T->StmList,indent+6);      //显示语句部分
                         }
                         break;
@@ -96,13 +96,20 @@ void display(struct ASTNode *T,int indent)
                         display(T->DefList,indent);    //显示其它局部变量定义
                         break;
     case VAR_DEF:       printf("%*c局部变量定义:(%d)\n",indent,' ',T->pos);
+                        if(T->DecList->Dec->kind == ARRAY_DEC)
+                        {
+                            printf("%*cArray defined:\n",indent,' ');
+                        }
                         display(T->Specifier,indent+3);   //显示变量类型
                         display(T->DecList,indent+3);   //显示该定义的全部变量名
                         break;
     case DEC_LIST:      printf("%*c变量名:\n",indent,' ');
                         T0=T;
                         while (T0) {
-                            if (T0->Dec->kind==ID)
+                            if(T0->Dec->kind==ARRAY_DEC){
+                                display(T->Dec, indent+3);
+                                printf("%*c Length:%d\n",indent+6,' ',T0->Dec->type_int);
+                            } else if (T0->Dec->kind==ID)
                                 printf("%*c %s\n",indent+6,' ',T0->Dec->type_id);
                             else if (T0->Dec->kind==ASSIGNOP){
                                 printf("%*c %s ASSIGNOP\n ",indent+6,' ',T0->Dec->Dec->type_id);
@@ -117,6 +124,17 @@ void display(struct ASTNode *T,int indent)
                         break;
 	case FLOAT:	        printf("%*cFLAOT:%f\n",indent,' ',T->type_float);
                         break;
+    case ARRAY_CALL:         
+                        printf("%*cARRAY CALL:\n",indent,' ');
+                        display(T->Exp1,indent+3);
+                        printf("%*cNO.:\n",indent, ' ');
+                        display(T->Exp2,indent+3);
+                        break;
+    case ARRAY_DEC:
+                    // printf("%*cARRAY DEC:\n",indent,' ');
+                    display(T->Dec,indent+3);
+                    printf("%*clength: %d\n",indent, ' ', T->type_int);
+                    break;
 	case ASSIGNOP:
 	case AND:
 	case OR:

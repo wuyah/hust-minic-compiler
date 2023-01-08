@@ -26,6 +26,7 @@ int lastToken;
 id   [A-Za-z][A-Za-z0-9]*  
 intconst    [0-9]+
 floatconst  [0-9]*\.?[0-9]?([eE][-+]?[0-9]+)?
+singleLineComment "//"[^\n]*
 
 %%
 "int"       {strcpy(yylval.type_id,  yytext);return TYPE;}
@@ -58,8 +59,13 @@ floatconst  [0-9]*\.?[0-9]?([eE][-+]?[0-9]+)?
 "}"							{return RC;}
 "["							{return LB;}
 "]"							{return RB;}
+"/*"						{return LA;}
+"*/"						{return LB;}
+
 {intconst}          {yylval.type_int=atoi(yytext);  return INT;}
 {floatconst}        {yylval.type_float=atof(yytext);return FLOAT;}
+{singleLineComment}			{}
+
 [ \r\t]             {}   
 
 [\n]                {yycolumn=1;}   

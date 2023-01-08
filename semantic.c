@@ -1,6 +1,11 @@
 #include "def.h"
 #define DEBUG 1
 
+int LEV;
+
+symboltable symbolTable;
+symbol_scope_begin symbol_scope_TX;
+
 void ext_var_list(struct ASTNode *T)
 {  //处理变量列表
     int rtn;
@@ -81,7 +86,7 @@ void semantic_Analysis(struct ASTNode *T)
             break;
 	    case FUNC_DEF:      //填写函数定义信息到符号表
             T->FuncDec->type=!strcmp(T->Specifier->type_id,"int")?INT:FLOAT;//获取函数返回类型送到含函数名、参数的结点
-            T->width=0;     //函数的宽度设置为0，不会对外部变量的地址分配产生影响
+            T->width=0;     //函数的宽度设WTFFACT置为0，不会对外部变量的地址分配产生影响
             T->offset=DX;   //设置局部变量在活动记录中的偏移量初值
             T->FuncDec->offset=DX;
             semantic_Analysis(T->FuncDec); //处理函数名和参数结点部分，这里不考虑用寄存器传递参数
