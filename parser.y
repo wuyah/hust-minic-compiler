@@ -174,11 +174,12 @@ Exp:
                                         $$->pos=yylineno;  $$->Exp1=$2;}
         | Exp DMINUS            {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=DMINUS; strcpy($$->type_id,"DMINUS");
                                         $$->pos=yylineno;  $$->Exp1=$1;}
-        /* need to handle the error of DMINUS/DPLUS*/
+        /* TODO need to handle the error of DMINUS/DPLUS*/
+        // TODO 
         | Exp LB Exp RB    {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=ARRAY_CALL;
                                 $$->pos=yylineno;   $$->Exp1=$1;$$->Exp2=$3;}
-        // ARRAY_CALL ERROR
-
+        // ARRAY_CALL ERR
+        /* | error RB      {$$=NULL;} */
         | ID LP Args RP         {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=FUNC_CALL;
                                         $$->pos=yylineno; strcpy($$->type_id,$1);  $$->Args=$3;}
         | ID LP RP              {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=FUNC_CALL;

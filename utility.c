@@ -191,9 +191,26 @@ void prn_symbol(){ //显示符号表
     printf("%6s %6s %6s  %6s %4s %6s\n","变量名","别 名","层 号","类  型","标记","偏移量");
     for(i=0;i<symbolTable.index;i++)
     {
+        char type[16];
+        switch (symbolTable.symbols[i].type)
+        {
+        case INT:
+            /* code */
+            strcpy(type, "int");
+            break;
+        case FLOAT:
+            strcpy(type, "float");
+            break;
+        case INT+ARRAY_DEC:
+            strcpy(type, "int*");
+            break;
+        case FLOAT+ARRAY_DEC:
+            strcpy(type, "float*");
+            break;
+        }
         printf("%6s %6s %6d  %6s %4c %6d\n",symbolTable.symbols[i].name,\
         symbolTable.symbols[i].alias,symbolTable.symbols[i].level,\
-        symbolTable.symbols[i].type==INT?"int":"float",\
+        type,\
         symbolTable.symbols[i].flag,symbolTable.symbols[i].offset);
     }
 }
@@ -209,6 +226,7 @@ int searchSymbolTable(char *name) {
     }
     return -1;
 }
+
 int fillSymbolTable(char *name,char *alias,int level,int type,char flag,int offset)
 {
     //首先根据name查符号表，不能重复定义 重复定义返回-1
@@ -229,6 +247,8 @@ int fillSymbolTable(char *name,char *alias,int level,int type,char flag,int offs
     symbolTable.symbols[symbolTable.index].type=type;
     symbolTable.symbols[symbolTable.index].flag=flag;
     symbolTable.symbols[symbolTable.index].offset=offset;
+    symbolTable.symbols[symbolTable.index].arraylen = (vector *)malloc(sizeof(vector));
+    vector_init(symbolTable.symbols[symbolTable.index].arraylen, 1);
     return symbolTable.index++; //返回的是符号在符号表中的位置序号，中间代码生成时可用序号取到符号别名
 }
 
@@ -240,5 +260,14 @@ int fill_Temp(char *name,int level,int type,char flag,int offset) {
     symbolTable.symbols[symbolTable.index].type=type;
     symbolTable.symbols[symbolTable.index].flag=flag;
     symbolTable.symbols[symbolTable.index].offset=offset;
+    symbolTable.symbols[symbolTable.index].arraylen = (vector *)malloc(sizeof(vector));
+    vector_init(symbolTable.symbols[symbolTable.index].arraylen, 1);
     return symbolTable.index++; //返回的是临时变量在符号表中的位置序号
+}
+
+// push back array length
+int fill_arr_length(int index, int length)
+{
+    vector_push_back(symbolTable.symbols[index].arraylen, length);
+    return index;
 }

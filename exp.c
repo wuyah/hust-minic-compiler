@@ -1,11 +1,15 @@
 #include "def.h"
+#include "vector.h"
 
 void Exp(struct ASTNode *T)
 { // 处理基本表达式，参考文献[2]p82的思想
     int rtn, num, width;
     struct ASTNode *T0;
     struct opn opn1, opn2, result;
+    vector *v;
     int op;
+    v = (vector*)malloc(sizeof(vector));
+    vector_init(v, 1);
     if (T)
     {
         switch (T->kind)
@@ -19,11 +23,54 @@ void Exp(struct ASTNode *T)
             else
             {
                 T->place = rtn; // 结点保存变量在符号表中的位置
+                // array need use place to calculate the rtn
                 T->code = NULL; // 标识符不需要生成TAC
                 T->type = symbolTable.symbols[rtn].type;
                 T->offset = symbolTable.symbols[rtn].offset;
                 T->width = 0; // 未再使用新单元
             }
+            break;
+        case ARRAY_CALL:
+            /*  | Exp LB Exp RB    {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=ARRAY_CALL;
+                            $$->pos=yylineno;   $$->Exp1=$1;$$->Exp2=$3;}*/
+            T0 = T;
+            while(T0->kind==ARRAY_CALL)
+            {
+                T0->Exp2->offset = T0->offset + 4;
+                Exp(T0->Exp2);
+                T->offset += T0->Exp2->offset;
+                if(T0->Exp2->type!=INT)
+                    semantic_error(T0->pos,"Fatal Error:", "Array index's type isn't INT\n");
+                vector_push_back(v, T0->type_int);
+                T0 = T0->Exp1;
+            }
+            if(T0->kind==ID)
+            {
+                rtn = searchSymbolTable(T0->type_id);
+                if (rtn == -1)
+                    semantic_error(T->pos, T->type_id, "变量未定义");
+                else if (symbolTable.symbols[rtn].flag == 'F')
+                    semantic_error(T->pos, T->type_id, "是函数名，类型不匹配");
+                else{
+                    int offset = symbolTable.symbols[rtn].offset;
+                    printf("Offset = %d\n", offset);
+                    printf("rtn = %d\n", rtn);
+                    // calculate the offset of calling
+                    for(int i=0; i<v->size; i++)
+                        offset += v->data[i]\
+                             * symbolTable.symbols[rtn].arraylen->data[i];
+                    
+                    T->place = rtn; // 结点保存变量在符号表中的位置
+                // array need use place to calculate the rtn
+                    T->code = NULL; // 标识符不需要生成TAC
+                    T->type = symbolTable.symbols[rtn].type;
+                    T->offset = offset;
+                    T->width = 0; // 未再使用新单元
+                    T->kind = ID;
+                    printf("Offset = %d\n", offset);
+                }
+            } else
+                semantic_error(T0->pos,"Fatal Error!", "Array Left Must be ID\n");
             break;
         case INT:
             // 为整常量生成一个临时变量，T->place表示临时变量在符号表位置
@@ -52,11 +99,14 @@ void Exp(struct ASTNode *T)
             T->width = 4;
             break;
         case ASSIGNOP:
+            T->Exp1->offset = T->offset;
+            Exp(T->Exp1);                // 处理左值，例中仅为变量
+            // move to there
             if (T->Exp1->kind != ID)
             {
                 semantic_error(T->pos, "", "赋值语句需要左值");
             }
-            else if (T->Exp1->kind == INT && T->Exp2->kind == FLOAT)
+            else if (T->Exp1->type == INT && T->Exp2->type == FLOAT)
             {
                 // add assign type error
                 rtn = searchSymbolTable(T->Exp1->type_id);
@@ -72,9 +122,8 @@ void Exp(struct ASTNode *T)
                     semantic_error(T->pos, "", "assign type not match\n");
                 }
 
-                T->Exp1->offset = T->offset;
-                Exp(T->Exp1);                // 处理左值，例中仅为变量
                 T->offset += T->Exp1->width; // 如果左值是下标变量，width会大于0
+                
                 T->Exp2->offset = T->offset;
                 Exp(T->Exp2);
                 T->type = T->Exp1->type;

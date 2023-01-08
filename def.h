@@ -4,6 +4,7 @@
 #include "stdlib.h"
 #include "string.h"
 #include "stdarg.h"
+#include "vector.h"
 #include "parser.tab.h"
 #define MAXLENGTH   200
 #define DX 3*sizeof(int)          /*活动记录控制信息需要的单元数，这个根据实际系统调整*/
@@ -36,6 +37,7 @@ typedef struct ASTNode {
 		  char type_id[33];        //由标识符生成的叶结点
 		  int type_int;            //由整常数生成的叶结点
 		  float type_float;        //由浮点常数生成的叶结点
+          int arr_length;          //array length
 	      };
     union {//第1指针域
         struct ASTNode *Specifier; //说明语句的类型
@@ -85,6 +87,7 @@ struct symbol {     //这里只列出了一个符号表项的部分属性，没�
     char alias[10]; //别名，为解决嵌套层次使用
     char flag;      //符号标记，函数：'F'  变量：'V'   参数：'P'  临时变量：'T'
     char offset;    //外部变量和局部变量在其静态数据区或活动记录中的偏移量，或记录函数活动记录大小，目标代码生成时使用
+    vector* arraylen;
     //函数入口...
 };
 //符号表
@@ -128,5 +131,6 @@ int fillSymbolTable(char *name,char *alias,int level,int type,char flag,int offs
 int fill_Temp(char *name,int level,int type,char flag,int offset);
 void prn_symbol();
 int  match_param(int i,struct ASTNode *T);
+int fill_arr_length(int index, int length);
 
 void semantic_error(int line,char *msg1,char *msg2);

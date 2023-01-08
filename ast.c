@@ -108,7 +108,6 @@ void display(struct ASTNode *T,int indent)
                         while (T0) {
                             if(T0->Dec->kind==ARRAY_DEC){
                                 display(T->Dec, indent+3);
-                                printf("%*c Length:%d\n",indent+6,' ',T0->Dec->type_int);
                             } else if (T0->Dec->kind==ID)
                                 printf("%*c %s\n",indent+6,' ',T0->Dec->type_id);
                             else if (T0->Dec->kind==ASSIGNOP){

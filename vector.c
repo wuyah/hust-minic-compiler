@@ -1,6 +1,6 @@
 #include "vector.h"
 
-void vector_init(vector *v, int capacity)
+void vector_init(vector* v, int capacity)
 {
     v->data = (int *)malloc(capacity * sizeof(int));
     v->size = 0;
@@ -14,7 +14,7 @@ void vector_destory(vector* v)
     v->capacity = 0;
 }
 
-void vector_push_back(vector *v, int value)
+void vector_push_back(vector* v, int value)
 {
     // 如果向量已满，则扩大容量
     if (v->size == v->capacity)
@@ -27,7 +27,7 @@ void vector_push_back(vector *v, int value)
     v->data[v->size++] = value;
 }
 
-void vector_pop_back(vector *v)
+void vector_pop_back(vector* v)
 {
     if (v->size > 0)
     {

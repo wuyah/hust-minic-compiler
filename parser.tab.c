@@ -611,7 +611,7 @@ static const yytype_uint8 yyrline[] =
      105,   106,   108,   110,   112,   114,   118,   119,   121,   123,
      126,   128,   131,   132,   136,   139,   144,   147,   149,   151,
      155,   157,   159,   161,   163,   164,   166,   169,   171,   173,
-     175,   178,   182,   184,   186,   188,   190,   193,   196
+     175,   179,   183,   185,   187,   189,   191,   194,   197
 };
 #endif
 
@@ -1758,56 +1758,56 @@ yyreduce:
     break;
 
   case 51: /* Exp: Exp LB Exp RB  */
-#line 178 "parser.y"
+#line 179 "parser.y"
                            {(yyval.ptr)=(ASTNode *)malloc(sizeof(ASTNode)); (yyval.ptr)->kind=ARRAY_CALL;
                                 (yyval.ptr)->pos=yylineno;   (yyval.ptr)->Exp1=(yyvsp[-3].ptr);(yyval.ptr)->Exp2=(yyvsp[-1].ptr);}
 #line 1765 "parser.tab.c"
     break;
 
   case 52: /* Exp: ID LP Args RP  */
-#line 182 "parser.y"
+#line 183 "parser.y"
                                 {(yyval.ptr)=(ASTNode *)malloc(sizeof(ASTNode)); (yyval.ptr)->kind=FUNC_CALL;
                                         (yyval.ptr)->pos=yylineno; strcpy((yyval.ptr)->type_id,(yyvsp[-3].type_id));  (yyval.ptr)->Args=(yyvsp[-1].ptr);}
 #line 1772 "parser.tab.c"
     break;
 
   case 53: /* Exp: ID LP RP  */
-#line 184 "parser.y"
+#line 185 "parser.y"
                                 {(yyval.ptr)=(ASTNode *)malloc(sizeof(ASTNode)); (yyval.ptr)->kind=FUNC_CALL;
                                         (yyval.ptr)->pos=yylineno; strcpy((yyval.ptr)->type_id,(yyvsp[-2].type_id));  (yyval.ptr)->Args=NULL;}
 #line 1779 "parser.tab.c"
     break;
 
   case 54: /* Exp: ID  */
-#line 186 "parser.y"
+#line 187 "parser.y"
                                 {(yyval.ptr)=(ASTNode *)malloc(sizeof(ASTNode)); (yyval.ptr)->kind=ID;
                                         (yyval.ptr)->pos=yylineno;  strcpy((yyval.ptr)->type_id,(yyvsp[0].type_id));}
 #line 1786 "parser.tab.c"
     break;
 
   case 55: /* Exp: INT  */
-#line 188 "parser.y"
+#line 189 "parser.y"
                         {(yyval.ptr)=(ASTNode *)malloc(sizeof(ASTNode)); (yyval.ptr)->kind=INT;
                                 (yyval.ptr)->pos=yylineno;  (yyval.ptr)->type=INT;(yyval.ptr)->type_int=(yyvsp[0].type_int);}
 #line 1793 "parser.tab.c"
     break;
 
   case 56: /* Exp: FLOAT  */
-#line 190 "parser.y"
+#line 191 "parser.y"
                         {(yyval.ptr)=(ASTNode *)malloc(sizeof(ASTNode)); (yyval.ptr)->kind=FLOAT;
                                 (yyval.ptr)->pos=yylineno; (yyval.ptr)->type=FLOAT; (yyval.ptr)->type_float=(yyvsp[0].type_float)=(yyvsp[0].type_float);}
 #line 1800 "parser.tab.c"
     break;
 
   case 57: /* Args: Exp COMMA Args  */
-#line 193 "parser.y"
+#line 194 "parser.y"
                            {(yyval.ptr)=(ASTNode *)malloc(sizeof(ASTNode)); (yyval.ptr)->kind=ARGS;
                                                (yyval.ptr)->pos=yylineno;  (yyval.ptr)->Exp1=(yyvsp[-2].ptr);(yyval.ptr)->Args=(yyvsp[0].ptr);}
 #line 1807 "parser.tab.c"
     break;
 
   case 58: /* Args: Exp  */
-#line 196 "parser.y"
+#line 197 "parser.y"
                           {(yyval.ptr)=(ASTNode *)malloc(sizeof(ASTNode)); (yyval.ptr)->kind=ARGS;
                                (yyval.ptr)->pos=yylineno;  (yyval.ptr)->Exp1=(yyvsp[0].ptr);(yyval.ptr)->Args=NULL;}
 #line 1814 "parser.tab.c"
@@ -2012,7 +2012,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 201 "parser.y"
+#line 202 "parser.y"
 
 
 int main(int argc, char *argv[]){

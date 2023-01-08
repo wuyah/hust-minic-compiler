@@ -1,4 +1,5 @@
 #include "def.h"
+#include "vector.h"
 #define DEBUG 1
 
 int LEV;
@@ -200,7 +201,8 @@ void semantic_Analysis(struct ASTNode *T)
                 num=0;
                 T0->offset=T->offset;
                 T->width=0;
-                width=T->DecList->type==INT?4:8;  //一个变量宽度
+                // width=T->DecList->type==INT?4:8;  //一个变量宽度
+                width = 4;
                 while (T0)
                 {  //处理所以DEC_LIST结点
                     num++;
@@ -208,7 +210,36 @@ void semantic_Analysis(struct ASTNode *T)
                     if (T0->DecList) T0->DecList->type=T0->type;
                     T0->Dec->offset=T0->offset;  //类型属性向下传递
                     if (T0->DecList) T0->DecList->offset=T0->offset+width;
-                    if (T0->Dec->kind==ID)
+
+                    if(T0->Dec->kind == ARRAY_DEC)
+                    {
+                        vector *v;
+                        v = (vector*)malloc(sizeof(vector));
+                        vector_init(v, 1);
+                        ASTNode* temp_arrNode = T0->Dec;
+                        while (temp_arrNode->kind ==  ARRAY_DEC)
+                        {
+                            vector_push_back(v, temp_arrNode->type_int);
+                            // type transport until id
+                            temp_arrNode->type = T0->type;
+                            temp_arrNode = temp_arrNode->Dec;
+                        }
+                        if(temp_arrNode->kind != ID)
+                            semantic_error(temp_arrNode->pos, "", "fatal error, array declare need ID left\n");
+                        else{
+                            temp_arrNode->type = T0->type;
+                            width=1;
+                            for(int i=0;i<v->size;i++)
+                            {
+                                width *= v->data[i];
+                            }
+                            if(temp_arrNode->type==INT || temp_arrNode->type==FLOAT)
+                                width *= 4;
+                            T->width += width;
+                            // fill symbol table
+                            rtn = fillSymbolTable(temp_arrNode->type_id,newAlias(),LEV,temp_arrNode->type+ARRAY_DEC,'V',T->offset+T->width);
+                        }
+                    }else if (T0->Dec->kind==ID)
                     {
                         rtn=fillSymbolTable(T0->Dec->type_id,newAlias(),LEV,T0->Dec->type,'V',T->offset+T->width);//此处偏移量未计算，暂时为0
                         if (rtn==-1)
@@ -343,6 +374,7 @@ void semantic_Analysis(struct ASTNode *T)
                     T->code=genIR(RETURN,opn1,opn2,result);
                 }
                 break;
+    case ARRAY_CALL:
 	case ID:
     case INT:
     case FLOAT:
