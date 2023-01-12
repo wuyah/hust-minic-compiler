@@ -342,6 +342,12 @@ void objectCode(struct codenode *head)
             fprintf(fp, "  lw $v0,%d($sp)\n", h->result.offset); // 返回值送到$v0
             fprintf(fp, "  jr $ra\n");
             break;
+        case ARRAY_CALL:
+            // temp24 -> v2[temp14]
+            fprintf(fp, "  lw $t1, %d\n", h->opn1.offset);
+            fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
+            
+            break;
         }
         h = h->next;
     } while (h != head);

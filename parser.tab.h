@@ -94,46 +94,49 @@ extern int yydebug;
     CASE = 295,                    /* CASE  */
     COLON = 296,                   /* COLON  */
     DEFAULT = 297,                 /* DEFAULT  */
-    EXT_DEF_LIST = 298,            /* EXT_DEF_LIST  */
-    EXT_VAR_DEF = 299,             /* EXT_VAR_DEF  */
-    FUNC_DEF = 300,                /* FUNC_DEF  */
-    FUNC_DEC = 301,                /* FUNC_DEC  */
-    EXT_DEC_LIST = 302,            /* EXT_DEC_LIST  */
-    PARAM_LIST = 303,              /* PARAM_LIST  */
-    PARAM_DEC = 304,               /* PARAM_DEC  */
-    VAR_DEF = 305,                 /* VAR_DEF  */
-    DEC_LIST = 306,                /* DEC_LIST  */
-    DEF_LIST = 307,                /* DEF_LIST  */
-    COMP_STM = 308,                /* COMP_STM  */
-    STM_LIST = 309,                /* STM_LIST  */
-    EXP_STMT = 310,                /* EXP_STMT  */
-    IF_THEN = 311,                 /* IF_THEN  */
-    IF_THEN_ELSE = 312,            /* IF_THEN_ELSE  */
-    FUNC_CALL = 313,               /* FUNC_CALL  */
-    ARGS = 314,                    /* ARGS  */
-    FUNCTION = 315,                /* FUNCTION  */
-    PARAM = 316,                   /* PARAM  */
-    ARG = 317,                     /* ARG  */
-    CALL = 318,                    /* CALL  */
-    LABEL = 319,                   /* LABEL  */
-    GOTO = 320,                    /* GOTO  */
-    JLT = 321,                     /* JLT  */
-    JLE = 322,                     /* JLE  */
-    JGT = 323,                     /* JGT  */
-    JGE = 324,                     /* JGE  */
-    EQ = 325,                      /* EQ  */
-    NEQ = 326,                     /* NEQ  */
-    EXP_JLT = 327,                 /* EXP_JLT  */
-    EXP_JLE = 328,                 /* EXP_JLE  */
-    EXP_JGT = 329,                 /* EXP_JGT  */
-    EXP_JGE = 330,                 /* EXP_JGE  */
-    EXP_EQ = 331,                  /* EXP_EQ  */
-    EXP_NEQ = 332,                 /* EXP_NEQ  */
-    ARRAY_CALL = 333,              /* ARRAY_CALL  */
-    ARRAY_DEC = 334,               /* ARRAY_DEC  */
-    ANNOTATION = 335,              /* ANNOTATION  */
-    UMINUS = 336,                  /* UMINUS  */
-    LOWER_THEN_ELSE = 337          /* LOWER_THEN_ELSE  */
+    CONTINUE = 298,                /* CONTINUE  */
+    BREAK = 299,                   /* BREAK  */
+    EXT_DEF_LIST = 300,            /* EXT_DEF_LIST  */
+    EXT_VAR_DEF = 301,             /* EXT_VAR_DEF  */
+    FUNC_DEF = 302,                /* FUNC_DEF  */
+    FUNC_DEC = 303,                /* FUNC_DEC  */
+    EXT_DEC_LIST = 304,            /* EXT_DEC_LIST  */
+    PARAM_LIST = 305,              /* PARAM_LIST  */
+    PARAM_DEC = 306,               /* PARAM_DEC  */
+    VAR_DEF = 307,                 /* VAR_DEF  */
+    DEC_LIST = 308,                /* DEC_LIST  */
+    DEF_LIST = 309,                /* DEF_LIST  */
+    COMP_STM = 310,                /* COMP_STM  */
+    STM_LIST = 311,                /* STM_LIST  */
+    EXP_STMT = 312,                /* EXP_STMT  */
+    IF_THEN = 313,                 /* IF_THEN  */
+    IF_THEN_ELSE = 314,            /* IF_THEN_ELSE  */
+    FUNC_CALL = 315,               /* FUNC_CALL  */
+    ARGS = 316,                    /* ARGS  */
+    FUNCTION = 317,                /* FUNCTION  */
+    PARAM = 318,                   /* PARAM  */
+    ARG = 319,                     /* ARG  */
+    CALL = 320,                    /* CALL  */
+    LABEL = 321,                   /* LABEL  */
+    GOTO = 322,                    /* GOTO  */
+    JLT = 323,                     /* JLT  */
+    JLE = 324,                     /* JLE  */
+    JGT = 325,                     /* JGT  */
+    JGE = 326,                     /* JGE  */
+    EQ = 327,                      /* EQ  */
+    NEQ = 328,                     /* NEQ  */
+    EXP_JLT = 329,                 /* EXP_JLT  */
+    EXP_JLE = 330,                 /* EXP_JLE  */
+    EXP_JGT = 331,                 /* EXP_JGT  */
+    EXP_JGE = 332,                 /* EXP_JGE  */
+    EXP_EQ = 333,                  /* EXP_EQ  */
+    EXP_NEQ = 334,                 /* EXP_NEQ  */
+    ARRAY_CALL = 335,              /* ARRAY_CALL  */
+    ARRAY_DEC = 336,               /* ARRAY_DEC  */
+    ANNOTATION = 337,              /* ANNOTATION  */
+    POINTER = 338,                 /* POINTER  */
+    UMINUS = 339,                  /* UMINUS  */
+    LOWER_THEN_ELSE = 340          /* LOWER_THEN_ELSE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -149,7 +152,7 @@ union YYSTYPE
 	char   type_id[32];
 	struct ASTNode *ptr;
 
-#line 153 "parser.tab.h"
+#line 156 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

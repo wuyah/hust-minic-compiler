@@ -23,15 +23,18 @@ int lastToken;
 
 %}
 
+
 id   [A-Za-z][A-Za-z0-9]*  
 intconst    [0-9]+
 floatconst  [0-9]*\.?[0-9]?([eE][-+]?[0-9]+)?
-singleLineComment "//"[^\n]*
-
+singleLineComment 	"//"[^\n]*
+/* blockComment 		""[\s\S]*"" */
 %%
 "int"       {strcpy(yylval.type_id,  yytext);return TYPE;}
 "float"     {strcpy(yylval.type_id,  yytext);return TYPE;}
 
+"continue"	{return CONTINUE;}
+"break"		{return BREAK;}
 "return"    {return RETURN;}
 "if"        {return IF;}
 "else"      {return ELSE;}
@@ -64,8 +67,8 @@ singleLineComment "//"[^\n]*
 
 {intconst}          {yylval.type_int=atoi(yytext);  return INT;}
 {floatconst}        {yylval.type_float=atof(yytext);return FLOAT;}
-{singleLineComment}			{}
-
+{singleLineComment}	{}
+/* {blockComment}		{} */
 [ \r\t]             {}   
 
 [\n]                {yycolumn=1;}   

@@ -235,9 +235,18 @@ void semantic_Analysis(struct ASTNode *T)
                             }
                             if(temp_arrNode->type==INT || temp_arrNode->type==FLOAT)
                                 width *= 4;
-                            T->width += width;
+                            printf("array width:%d\n", width);
                             // fill symbol table
-                            rtn = fillSymbolTable(temp_arrNode->type_id,newAlias(),LEV,temp_arrNode->type+ARRAY_DEC,'V',T->offset+T->width);
+                            // basic type + ARRAY_DEC makes type like int* float*...
+                            rtn = fillSymbolTable(temp_arrNode->type_id,newAlias(),LEV,temp_arrNode->type+ARRAY_DEC,'V',T->offset);
+                            if (rtn==-1)
+                                semantic_error(T0->Dec->pos,T0->Dec->type_id, "变量重复定义");
+                            else {
+                                T0->Dec->place=rtn;
+                                symbolTable.symbols[rtn].arraylen = v;
+                            }   
+                            T->width = width;
+                            printf("T->width width:%d\n", width);
                         }
                     }else if (T0->Dec->kind==ID)
                     {
@@ -361,7 +370,7 @@ void semantic_Analysis(struct ASTNode *T)
 	case RETURN:if (T->Exp1){
                     T->Exp1->offset=T->offset;
                     Exp(T->Exp1);
-// TODO
+            // TODO
 				 /*需要判断返回值类型是否匹配*/
                     T->width=T->Exp1->width;
                     result.kind=ID; strcpy(result.id,symbolTable.symbols[T->Exp1->place].alias);

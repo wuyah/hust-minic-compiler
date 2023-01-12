@@ -1,4 +1,4 @@
-// a test for real
+// a test for not && write && float/int object code
 
 int main()
 {
@@ -6,6 +6,8 @@ int main()
     int b;
     a = 0.0;
     b=2;
-    b = !a;
+    b = !!a;
+    b = 2+3+4*5/2;
+    write(b);
     return 0;
 }

@@ -181,6 +181,9 @@ void prnIR(struct codenode *head)
                            else
                                 printf("  RETURN\n");
                            break;
+            case POINTER:
+                            printf("  %s -> %s[%s]\n", resultstr, opnstr1, opnstr2);
+                            break;
         }
         h=h->next;
     } while (h!=head);
@@ -188,10 +191,12 @@ void prnIR(struct codenode *head)
 
 void prn_symbol(){ //显示符号表
     int i=0;
-    printf("%6s %6s %6s  %6s %4s %6s\n","变量名","别 名","层 号","类  型","标记","偏移量");
+    printf("%6s %6s %6s %6s %4s %6s %6s\n","变量名","别 名","层 号","类  型","标记","偏移量", "other_info");
     for(i=0;i<symbolTable.index;i++)
     {
         char type[16];
+        char offset[33];
+        sprintf(offset, "%d", symbolTable.symbols[i].offset);
         switch (symbolTable.symbols[i].type)
         {
         case INT:
@@ -208,13 +213,20 @@ void prn_symbol(){ //显示符号表
             strcpy(type, "float*");
             break;
         }
-        printf("%6s %6s %6d  %6s %4c %6d\n",symbolTable.symbols[i].name,\
+        printf("%6s %6s %6d  %6s %4c %s",symbolTable.symbols[i].name,\
         symbolTable.symbols[i].alias,symbolTable.symbols[i].level,\
         type,\
-        symbolTable.symbols[i].flag,symbolTable.symbols[i].offset);
+        symbolTable.symbols[i].flag,offset);
+        if(symbolTable.symbols[i].arraylen->size>0)
+        {
+            for(int j=0;i<symbolTable.symbols[i].arraylen->size;j++)
+                printf("%d ", symbolTable.symbols[i].arraylen->data[j]);
+        }
+        printf("\n");
     }
 }
 
+// return the index of searched string
 int searchSymbolTable(char *name) {
     int i,flag=0;
     for(i=symbolTable.index-1;i>=0;i--){

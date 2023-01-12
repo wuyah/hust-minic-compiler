@@ -28,16 +28,16 @@ int yylex();
 %token <type_id> ID  RELOP TYPE    /*指定ID,RELOP 的语义值是type_id，有词法分析得到的标识符字符串*/
 %token <type_float> FLOAT          /*指定ID的语义值是type_id，有词法分析得到的标识符字符串*/
     
-
 %token DPLUS DMINUS GE GT LE LP LT NE RP LB RB LC RC LA RA SEMI COMMA     /*用bison对该文件编译时，带参数-d，生成的exp.tab.h中给这些单词进行编码，可在lex.l中包含parser.tab.h使用这些单词种类码*/
 %token PLUS MINUS STAR DIV ASSIGNOP AND OR NOT IF ELSE WHILE RETURN STRUCT FOR SWITCH CASE COLON DEFAULT 
+%token CONTINUE BREAK
 /*以下为接在上述token后依次编码的枚举常量，作为AST结点类型标记*/
 %token EXT_DEF_LIST EXT_VAR_DEF FUNC_DEF FUNC_DEC EXT_DEC_LIST PARAM_LIST PARAM_DEC VAR_DEF DEC_LIST DEF_LIST COMP_STM STM_LIST EXP_STMT IF_THEN IF_THEN_ELSE
 %token FUNC_CALL ARGS FUNCTION PARAM ARG CALL LABEL GOTO JLT JLE JGT JGE EQ NEQ
 /* token for exp relop */
 %token EXP_JLT EXP_JLE EXP_JGT EXP_JGE EXP_EQ EXP_NEQ
 /*  */
-%token ARRAY_CALL ARRAY_DEC ANNOTATION
+%token ARRAY_CALL ARRAY_DEC ANNOTATION POINTER
 
 %left ASSIGNOP
 %left OR
@@ -139,6 +139,7 @@ VarDec:                    //ID结点，标识符符号串存放结点的type_id
         | VarDec LB INT RB{$$=(ASTNode*)malloc(sizeof(ASTNode)); $$->kind=ARRAY_DEC;
                                 $$->pos=yylineno; $$->Dec=$1; $$->type_int=$3;}
         ;
+
 Exp:    
         
         Exp ASSIGNOP Exp  {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=ASSIGNOP;

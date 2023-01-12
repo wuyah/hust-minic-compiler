@@ -5,12 +5,14 @@
 #include "string.h"
 #include "stdarg.h"
 #include "vector.h"
+#include "stringSet.h"
 #include "parser.tab.h"
 #define MAXLENGTH   200
 #define DX 3*sizeof(int)          /*活动记录控制信息需要的单元数，这个根据实际系统调整*/
 
 extern int LEV;      //层号
 
+// TAC operator property
 struct opn{
     int kind;    //标识联合成员的属性
     int type;    //标识操作数的数据类型
@@ -24,12 +26,14 @@ struct opn{
     int offset;                 //偏移量，目标代码生成时用
 };
 
-struct codenode {   //三地址TAC代码结点,采用单链表存放中间语言代码
+// TAC Code node
+typedef struct codenode {   //三地址TAC代码结点,采用单链表存放中间语言代码
         int  op;
         struct opn opn1,opn2,result;
         struct codenode  *next,*prior;
-};
+}codenode;
 
+// abstract synax tree node
 typedef struct ASTNode {
         //以下对结点属性定义没有考虑存储效率，只是简单地列出要用到的一些属性
 	int kind;
@@ -71,7 +75,7 @@ typedef struct ASTNode {
     int place;                      //存放（临时）变量在符号表的位置序号
     char Etrue[15],Efalse[15];      //对布尔表达式的翻译时，真假转移目标的标号
     char Snext[15];                 //结点对应语句S执行后的下一条语句位置标号
-    struct codenode *code;          //该结点中间代码链表头指针
+    struct codenode *code;          //该结点中间代码链表头指针只列出了一个符号表项的部分属性，没考虑属性间的互斥
     int type;                       //用以标识表达式结点的类型
     int pos;                        //语法单位所在位置行号
     int offset;                     //偏移量
@@ -79,6 +83,7 @@ typedef struct ASTNode {
     int num;                        //计数器，可以用来统计形参个数
 } ASTNode;
 
+// symbol
 struct symbol {     //这里只列出了一个符号表项的部分属性，没考虑属性间的互斥
     char name[33];  //变量或函数名
     int level;      //层号
@@ -86,8 +91,9 @@ struct symbol {     //这里只列出了一个符号表项的部分属性，没�
     int  paramnum;  //对函数适用，记录形式参数个数
     char alias[10]; //别名，为解决嵌套层次使用
     char flag;      //符号标记，函数：'F'  变量：'V'   参数：'P'  临时变量：'T'
-    char offset;    //外部变量和局部变量在其静态数据区或活动记录中的偏移量，或记录函数活动记录大小，目标代码生成时使用
-    vector* arraylen;
+    // offset is only char, too small to calculate the offset
+    int offset;    //外部变量和局部变量在其静态数据区或活动记录中的偏移量，或记录函数活动记录大小，目标代码生成时使用
+    vector* arraylen;   // record the declared length of the array | node type ARRAY_DEC
     //函数入口...
 };
 //符号表
