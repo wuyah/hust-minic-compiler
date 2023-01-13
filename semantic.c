@@ -247,6 +247,7 @@ void semantic_Analysis(struct ASTNode *T)
                             }   
                             T->width = width;
                             printf("T->width width:%d\n", width);
+                            printf("array size:%d\n",symbolTable.symbols[rtn].arraylen->data[0]);
                         }
                     }else if (T0->Dec->kind==ID)
                     {

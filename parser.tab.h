@@ -134,7 +134,7 @@ extern int yydebug;
     ARRAY_CALL = 335,              /* ARRAY_CALL  */
     ARRAY_DEC = 336,               /* ARRAY_DEC  */
     ANNOTATION = 337,              /* ANNOTATION  */
-    POINTER = 338,                 /* POINTER  */
+    ARRAY_POINTER = 338,           /* ARRAY_POINTER  */
     UMINUS = 339,                  /* UMINUS  */
     LOWER_THEN_ELSE = 340          /* LOWER_THEN_ELSE  */
   };

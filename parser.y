@@ -37,7 +37,7 @@ int yylex();
 /* token for exp relop */
 %token EXP_JLT EXP_JLE EXP_JGT EXP_JGE EXP_EQ EXP_NEQ
 /*  */
-%token ARRAY_CALL ARRAY_DEC ANNOTATION POINTER
+%token ARRAY_CALL ARRAY_DEC ANNOTATION ARRAY_POINTER
 
 %left ASSIGNOP
 %left OR

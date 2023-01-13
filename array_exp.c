@@ -11,13 +11,13 @@ void arrayExp(ASTNode *T)
     T->width = 0;
     
     // use a temp var to save the offset
-    int offset_place = fill_Temp(newTemp(), LEV, INT, 'T', T->offset);
+    int offset_place = fill_Temp(newTemp(), LEV, INT, 'T', T->offset+T->width);
     // never plus offset
     T->width += 4;
     int store = 4;
     // gen "offset := 0"
     opn1.kind=INT; opn1.type = 0; opn1.const_int=0;
-    result.kind = ID; result.type = INT; result.offset = offset_place;
+    result.kind = ID; result.type = INT; result.offset = symbolTable.symbols[offset_place].offset;
     strcpy(result.id, symbolTable.symbols[offset_place].alias);
     T->code = genIR(ASSIGNOP, opn1, opn2, result);
 
@@ -25,7 +25,7 @@ void arrayExp(ASTNode *T)
     // pushback all the Exp place
     while(T0->kind == ARRAY_CALL)
     {
-        T0->Exp2->offset = T0->offset; 
+        T0->Exp2->offset = T->offset+T->width; 
         Exp(T0->Exp2);
         if(T0->Exp2->type != INT)
             semantic_error(T0->pos,"Fatal Error:", "Array's index_type isn't INT\n");
@@ -33,6 +33,7 @@ void arrayExp(ASTNode *T)
         vector_push_back(v, T0->Exp2->place);     
         T0->width = T0->Exp2->width;
         T->width += T0->width;
+        printf("T.width:%d\n", T->width);
         T->code = merge(2, T->code, T->Exp2->code);
         T0 = T0->Exp1; 
     }
@@ -40,7 +41,7 @@ void arrayExp(ASTNode *T)
     {
         // T0 offset is the T offset + the space T have used
         T0->offset = T->offset + T->width;
-        T0->width = 0;
+        T0->width = T->width;
         rtn = searchSymbolTable(T0->type_id);
 
         if (rtn == -1)
@@ -59,18 +60,20 @@ void arrayExp(ASTNode *T)
                 int var_pos = v->data[i];
                 printf("var pos = %d\n", var_pos);
                 // use a temp to save the immediate number
-                int immediate_place = fill_Temp(newTemp(), LEV, INT, 'T', T0->offset + T0->width);
-                T0->width += 4;
+                // Why T.width: all the node use one stack mem, if use T0, then the first temp1 can't be stored
+                int immediate_place = fill_Temp(newTemp(), LEV, INT, 'T', T->offset + T->width);
+                printf("T.offset:%d, T,width%d\n", T->offset, T->width);
+                T->width += 4;
                 opn1.kind = ID; opn1.type = INT; opn1.offset = symbolTable.symbols[immediate_place].offset;   
                 strcpy(opn1.id,symbolTable.symbols[immediate_place].alias);
                 opn2.kind = INT; opn2.type = INT; opn2.const_int = store;    
                 struct opn blank;  
                 T->code = merge(2, T->code, genIR(ASSIGNOP, opn2,blank,opn1));
+
                 // temp := ss.back * store
                 // opn1 : store(immediate int) ; opn2 : ss.back; target : temp
-                int mul_place = fill_Temp(newTemp(), LEV, INT, 'T', T0->offset + T0->width); 
-                T0->width += 4;
-
+                int mul_place = fill_Temp(newTemp(), LEV, INT, 'T', T->offset + T->width); 
+                T->width += 4;
                 // opn2
                 opn2.kind = ID; opn2.type = INT;
                 opn2.offset = symbolTable.symbols[var_pos].offset; 
@@ -82,7 +85,7 @@ void arrayExp(ASTNode *T)
 
                 // offset = offset + temp result:offset | opn1:=res \uparrow result
                 opn1 = result;                 
-                result.kind = ID; result.type = INT; result.offset = offset_place;
+                result.kind = ID; result.type = INT; result.offset = symbolTable.symbols[offset_place].offset;
                 strcpy(result.id, symbolTable.symbols[offset_place].alias);
                 // merge IR
                 T->code = merge(2, T->code, genIR(PLUS, opn1, result, result));
@@ -91,20 +94,20 @@ void arrayExp(ASTNode *T)
                 store *= symbolTable.symbols[rtn].arraylen->data[i];
             }
             printf("store = %d\n", offset);
-            T->width += T0->width;
+            // T->width += T0->width;
             // use a temp to save the result of the array call; IR fmt: temp := array_id[offset]
-            int return_position = fill_Temp(newTemp(), LEV, POINTER, 'T', T->offset);
+            int return_position = fill_Temp(newTemp(), LEV, ARRAY_POINTER, 'T', T->offset+T->width);
             T->width += 4;
             // res:opn1(temp) | opn1:id(opn2) | opn2:offset(result opn)
             // temp
-            opn1.kind = ID; opn1.type = T0->type; opn1.offset = symbolTable.symbols[return_position].offset;
+            opn1.kind = ARRAY_POINTER; opn1.type = T0->type; opn1.offset = symbolTable.symbols[return_position].offset;
             strcpy(opn1.id, symbolTable.symbols[return_position].alias);
             // opn2
             opn2.kind = ID; opn2.type = T0->type; opn2.offset = symbolTable.symbols[rtn].offset;
             strcpy(opn2.id, symbolTable.symbols[rtn].alias);
             result.kind = ID; result.type = INT; result.offset = offset_place;
             strcpy(result.id, symbolTable.symbols[offset_place].alias);
-            T->code = merge(2, T->code, genIR(POINTER, opn2, result, opn1));
+            T->code = merge(2, T->code, genIR(ARRAY_POINTER, opn2, result, opn1));
             
             T->place = return_position;         // save position
             T->kind = ARRAY_CALL;

@@ -181,7 +181,7 @@ void prnIR(struct codenode *head)
                            else
                                 printf("  RETURN\n");
                            break;
-            case POINTER:
+            case ARRAY_POINTER:
                             printf("  %s -> %s[%s]\n", resultstr, opnstr1, opnstr2);
                             break;
         }

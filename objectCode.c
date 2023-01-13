@@ -19,6 +19,8 @@ void objectCode(struct codenode *head)
     fprintf(fp, ".globl main0\n");
     fprintf(fp, ".text\n");
     fprintf(fp, "main0:\n");
+    fprintf(fp, "  addi $sp,$sp,%d\n", -666); // 释放活动记录空间
+
     fprintf(fp, "  jal main\n");
     // use to finish the main fuction
     fprintf(fp, "  li $v0, 10\n");
@@ -42,10 +44,26 @@ void objectCode(struct codenode *head)
     fprintf(fp, "  jr $ra\n");
     do
     { // 采用朴素寄存器分配
+    
         switch (h->op)
         {
         case ASSIGNOP:
-            if (h->opn1.kind == INT)
+        
+            if(h->result.kind == ARRAY_POINTER)
+            {
+                // pointer 
+                fprintf(fp, "  li $t1, %d\n", h->opn1.offset);
+                fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
+                fprintf(fp, "  add $t2, $t2, $t1\n");
+                fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
+            } else if(h->opn1.kind == ARRAY_POINTER)
+            {
+                fprintf(fp, "  li $t1, %d\n", h->opn1.offset);
+                fprintf(fp, "  addu $t1, $t1, $sp\n");
+
+                fprintf(fp, "  lw $t3, ($t1)\n");
+                fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
+            }else if (h->opn1.kind == INT)
             {
                 fprintf(fp, "  li $t3, %d\n", h->opn1.const_int);
                 fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
@@ -65,6 +83,9 @@ void objectCode(struct codenode *head)
         case MINUS:
         case STAR:
         case DIV:
+            if( h->opn2.offset == 6)
+                    printf("failed!\n");
+            printf("%s %d\n", h->opn2.id, h->opn2.offset);
             if (h->opn1.type == INT && h->opn2.type == INT)
             {
                 fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
@@ -129,6 +150,7 @@ void objectCode(struct codenode *head)
             fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
             break;
         case FUNCTION:
+        
             fprintf(fp, "\n%s:\n", h->result.id);
             if (!strcmp(h->result.id, "main")) // 特殊处理main
                 fprintf(fp, "  addi $sp, $sp, -%d\n", symbolTable.symbols[h->result.offset].offset);
@@ -136,6 +158,7 @@ void objectCode(struct codenode *head)
         case PARAM: // 直接跳到后面一条
             break;
         case LABEL:
+        
             fprintf(fp, "%s:\n", h->result.id);
             break;
         case GOTO:
@@ -297,6 +320,7 @@ void objectCode(struct codenode *head)
         case ARG: // 直接跳到后面一条,直到函数调用，回头反查参数。
             break;
         case CALL:
+        
             if (!strcmp(h->opn1.id, "read"))
             { // 特殊处理read
                 fprintf(fp, "  addi $sp, $sp, -4\n");
@@ -342,12 +366,12 @@ void objectCode(struct codenode *head)
             fprintf(fp, "  lw $v0,%d($sp)\n", h->result.offset); // 返回值送到$v0
             fprintf(fp, "  jr $ra\n");
             break;
-        case ARRAY_CALL:
-            // temp24 -> v2[temp14]
-            fprintf(fp, "  lw $t1, %d\n", h->opn1.offset);
-            fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
-            
-            break;
+        // case ARRAY_CALL:
+        //     // temp24 -> v2[temp14]
+        //     fprintf(fp, "  lw $t1, %d\n", h->opn1.offset);
+        //     fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
+
+        //     break;
         }
         h = h->next;
     } while (h != head);

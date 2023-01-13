@@ -1,14 +1,12 @@
-/* int */
+// int
 
 int main()
 {
-    int b[3][5][6];
-    int d=2;
-    int c = 4;
-    int e = 1;
+    int a[2][2][3];
     int g;
-
-    b[d][c][e+c]=1;
-    g = b[2][4][5];
+    int c = 1;
+    a[c][0][c-1+1] = 20;
+    g = a[c][0][c-1+1];
+    write(g);
     return 0;
 }

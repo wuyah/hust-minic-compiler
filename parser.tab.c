@@ -191,7 +191,7 @@ enum yysymbol_kind_t
   YYSYMBOL_ARRAY_CALL = 80,                /* ARRAY_CALL  */
   YYSYMBOL_ARRAY_DEC = 81,                 /* ARRAY_DEC  */
   YYSYMBOL_ANNOTATION = 82,                /* ANNOTATION  */
-  YYSYMBOL_POINTER = 83,                   /* POINTER  */
+  YYSYMBOL_ARRAY_POINTER = 83,             /* ARRAY_POINTER  */
   YYSYMBOL_UMINUS = 84,                    /* UMINUS  */
   YYSYMBOL_LOWER_THEN_ELSE = 85,           /* LOWER_THEN_ELSE  */
   YYSYMBOL_YYACCEPT = 86,                  /* $accept  */
@@ -642,7 +642,7 @@ static const char *const yytname[] =
   "IF_THEN_ELSE", "FUNC_CALL", "ARGS", "FUNCTION", "PARAM", "ARG", "CALL",
   "LABEL", "GOTO", "JLT", "JLE", "JGT", "JGE", "EQ", "NEQ", "EXP_JLT",
   "EXP_JLE", "EXP_JGT", "EXP_JGE", "EXP_EQ", "EXP_NEQ", "ARRAY_CALL",
-  "ARRAY_DEC", "ANNOTATION", "POINTER", "UMINUS", "LOWER_THEN_ELSE",
+  "ARRAY_DEC", "ANNOTATION", "ARRAY_POINTER", "UMINUS", "LOWER_THEN_ELSE",
   "$accept", "program", "ExtDefList", "ExtDef", "Specifier", "ExtDecList",
   "FuncDec", "VarList", "ParamDec", "CompSt", "StmList", "Stm", "DefList",
   "Def", "DecList", "Dec", "VarDec", "Exp", "Args", YY_NULLPTR

@@ -68,7 +68,6 @@ singleLineComment 	"//"[^\n]*
 {intconst}          {yylval.type_int=atoi(yytext);  return INT;}
 {floatconst}        {yylval.type_float=atof(yytext);return FLOAT;}
 {singleLineComment}	{}
-/* {blockComment}		{} */
 [ \r\t]             {}   
 
 [\n]                {yycolumn=1;}   

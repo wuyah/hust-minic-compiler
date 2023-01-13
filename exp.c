@@ -2,6 +2,7 @@
 #include "vector.h"
 
 void arrayExp(ASTNode *T);
+void assignExp(ASTNode* T);
 
 void Exp(struct ASTNode *T)
 { // 处理基本表达式，参考文献[2]p82的思想
@@ -41,6 +42,7 @@ void Exp(struct ASTNode *T)
             // 为整常量生成一个临时变量，T->place表示临时变量在符号表位置
             T->place = fill_Temp(newTemp(), LEV, T->type, 'T', T->offset);
             T->type = INT;
+            T->kind = ID;
             opn1.kind = INT;
             opn1.type = INT;
             opn1.const_int = T->type_int;
@@ -64,57 +66,7 @@ void Exp(struct ASTNode *T)
             T->width = 4;
             break;
         case ASSIGNOP:
-            T->Exp1->offset = T->offset;
-            Exp(T->Exp1);                // 处理左值，例中仅为变量
-            T->offset += T->Exp1->width; // 如果左值是下标变量，width会大于0
-            T->Exp2->offset = T->offset;
-            Exp(T->Exp2);
-            // move to there
-            if (T->Exp1->kind != ID && T->Exp1->kind != ARRAY_CALL)
-            {
-                semantic_error(T->pos, "", "赋值语句需要左值");
-            }
-            else if (T->Exp1->type == INT && T->Exp2->type == FLOAT)
-            {
-                // add assign type error
-                T->place = rtn;
-                semantic_error(T->pos, "", "assign type not match\n");
-            }
-            else
-            {
-                printf("Test1\n");
-                if(T->Exp1->kind==ID)
-                    rtn = searchSymbolTable(T->Exp1->type_id);
-                else
-                    rtn = T->Exp1->place;
-                printf("rtn:%d\n", rtn);
-                prn_symbol();
-                int type = symbolTable.symbols[rtn].type;
-                 printf("Test3\n");
-
-                if(type == INT && T->Exp2->type == FLOAT)
-                {
-                    semantic_error(T->pos, "", "assign type not match\n");
-                }
-                // ask a question
-
-                T->type = T->Exp1->type;
-
-                T->width = T->Exp1->width + T->Exp2->width;
-                T->code = merge(2, T->Exp1->code, T->Exp2->code);
-
-                opn1.kind = ID; // 右值一定是个变量或常量生成的临时变量
-                // not add 
-                opn1.type = T->Exp1->type;
-                strcpy(opn1.id, symbolTable.symbols[T->Exp2->place].alias);
-                opn1.offset = symbolTable.symbols[T->Exp2->place].offset;
-                result.kind = ID;
-                result.type = T->type;
-                strcpy(result.id, symbolTable.symbols[T->Exp1->place].alias);
-                result.offset = symbolTable.symbols[T->Exp1->place].offset;
-                T->code = merge(2, T->code, genIR(ASSIGNOP, opn1, opn2, result));
-
-            }
+            assignExp(T);
             break;
         // TODO this part is used to calculate the boolExp's value
         case AND:   // 按算术表达式方式计算布尔值，未写完
@@ -354,4 +306,67 @@ void boolExp(struct ASTNode *T)
             break;
         }
     }
+}
+
+void assignExp(ASTNode* T)
+{
+    int rtn, num, width;
+    struct ASTNode *T0;
+    struct opn opn1, opn2, result;
+    vector *v;
+    int op;
+    v = (vector*)malloc(sizeof(vector));
+    vector_init(v, 1);
+    T->Exp1->offset = T->offset;
+    Exp(T->Exp1);                // 处理左值，例中仅为变量
+
+    T->offset += T->Exp1->width; // 如果左值是下标变量，width会大于0
+    T->Exp2->offset = T->offset;
+    Exp(T->Exp2);
+    // move to there
+    if (T->Exp1->kind != ID && T->Exp1->kind != ARRAY_CALL)
+    {
+        semantic_error(T->pos, "", "赋值语句需要左值");
+    }
+    else if (T->Exp1->type == INT && T->Exp2->type == FLOAT)
+    {
+        // add assign type error
+        T->place = rtn;
+        semantic_error(T->pos, "", "assign type not match\n");
+    }
+    else
+    {
+        printf("Test1\n");
+        if(T->Exp1->kind==ID)
+            rtn = searchSymbolTable(T->Exp1->type_id);
+        else
+            rtn = T->Exp1->place;
+        int type = symbolTable.symbols[rtn].type;
+
+        if(type == INT && T->Exp2->type == FLOAT)
+        {
+            semantic_error(T->pos, "", "assign type not match\n");
+        }
+        // ask a question
+
+        T->type = T->Exp1->type;
+
+        T->width = T->Exp1->width + T->Exp2->width;
+        T->code = merge(2, T->Exp1->code, T->Exp2->code);
+        if(T->Exp2->kind==ID)
+            opn1.kind = ID; // 右值一定是个变量或常量生成的临时变量
+        else  
+            opn1.kind = ARRAY_POINTER;
+
+        // not add 
+        opn1.type = T->Exp2->type;
+        strcpy(opn1.id, symbolTable.symbols[T->Exp2->place].alias);
+        opn1.offset = symbolTable.symbols[T->Exp2->place].offset;
+        result.kind = ID;
+        result.type = T->type;
+        strcpy(result.id, symbolTable.symbols[T->Exp1->place].alias);
+        result.offset = symbolTable.symbols[T->Exp1->place].offset;
+        T->code = merge(2, T->code, genIR(ASSIGNOP, opn1, opn2, result));
+    }
+    return;
 }
