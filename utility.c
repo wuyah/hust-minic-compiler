@@ -95,6 +95,8 @@ struct codenode *merge(int num,...){
 //输出中间代码
 void prnIR(struct codenode *head)
 {
+    // FILE* fp;    fp = fopen("ir.txt", "w");
+
     char opnstr1[34],opnstr2[34],resultstr[34];
     struct codenode *h=head;
     do {

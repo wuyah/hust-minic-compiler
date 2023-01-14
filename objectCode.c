@@ -1,5 +1,8 @@
 #include "def.h"
 
+void bool_gen(codenode* h, FILE* fp);
+void read_data(codenode* h, FILE* fp);
+
 // 输出目标代码
 void objectCode(struct codenode *head)
 {
@@ -48,21 +51,18 @@ void objectCode(struct codenode *head)
         switch (h->op)
         {
         case ASSIGNOP:
-        
-            if(h->result.kind == ARRAY_POINTER)
+            if(h->result.kind == ARRAY_POINTER)                 // write a pointer
             {
-                // pointer 
                 fprintf(fp, "  li $t1, %d\n", h->opn1.offset);
                 fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
                 fprintf(fp, "  add $t2, $t2, $t1\n");
                 fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
-            } else if(h->opn1.kind == ARRAY_POINTER)
+            } else if(h->opn1.kind == ARRAY_POINTER)            // pointer for read
             {
                 fprintf(fp, "  li $t1, %d\n", h->opn1.offset);
                 fprintf(fp, "  addu $t1, $t1, $sp\n");
-
                 fprintf(fp, "  lw $t3, ($t1)\n");
-                fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
+                fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset); 
             }else if (h->opn1.kind == INT)
             {
                 fprintf(fp, "  li $t3, %d\n", h->opn1.const_int);
@@ -83,9 +83,7 @@ void objectCode(struct codenode *head)
         case MINUS:
         case STAR:
         case DIV:
-            if( h->opn2.offset == 6)
-                    printf("failed!\n");
-            printf("%s %d\n", h->opn2.id, h->opn2.offset);
+            read_data(h, fp);
             if (h->opn1.type == INT && h->opn2.type == INT)
             {
                 fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
@@ -106,22 +104,7 @@ void objectCode(struct codenode *head)
             else
             {
                 // load and covert to float
-                if (h->opn1.type == INT)
-                {
-                    fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
-                    fprintf(fp, "  mtc1 $t1, $f1\n");
-                    fprintf(fp, "  cvt.s.w $f1, $f1\n");
-                }
-                else
-                    fprintf(fp, "  l.s $f1, %d($sp)\n", h->opn1.offset);
-                if (h->opn2.type == INT)
-                {
-                    fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
-                    fprintf(fp, "  mtc1 $t2, $f2\n");
-                    fprintf(fp, "  cvt.s.w $f2, $f2\n");
-                }
-                else
-                    fprintf(fp, "  l.s $f2, %d($sp)\n", h->opn2.offset);
+                
 
                 if (h->op == PLUS)
                     fprintf(fp, "  add.s $f3,$f1,$f2\n");
@@ -170,74 +153,7 @@ void objectCode(struct codenode *head)
         case JGT:
         case EQ:
         case NEQ:
-            if (h->opn1.type == INT && h->opn2.type == INT)
-            {
-                fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
-                fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
-                if (h->op == JLE)
-                    fprintf(fp, "  ble $t1,$t2,%s\n", h->result.id);
-                else if (h->op == JLT)
-                    fprintf(fp, "  blt $t1,$t2,%s\n", h->result.id);
-                else if (h->op == JGE)
-                    fprintf(fp, "  bge $t1,$t2,%s\n", h->result.id);
-                else if (h->op == JGT)
-                    fprintf(fp, "  bgt $t1,$t2,%s\n", h->result.id);
-                else if (h->op == EQ)
-                    fprintf(fp, "  beq $t1,$t2,%s\n", h->result.id);
-                else
-                    fprintf(fp, "  bne $t1,$t2,%s\n", h->result.id);
-            }
-            else
-            {
-                // load and covert to float
-                if (h->opn1.type == INT)
-                {
-                    fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
-                    fprintf(fp, "  mtc1 $t1, $f1\n");
-                    fprintf(fp, "  cvt.s.w $f1, $f1\n");
-                }
-                else
-                    fprintf(fp, "  l.s $f2, %d($sp)\n", h->opn1.offset);
-                if (h->opn2.type == INT)
-                {
-                    fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
-                    fprintf(fp, "  mtc1 $t2, $f2\n");
-                    fprintf(fp, "  cvt.s.w $f2, $f2\n");
-                }
-                else
-                    fprintf(fp, "  l.s $f1, %d($sp)\n", h->opn2.offset);
-
-                if (h->op == JLE)
-                {
-                    fprintf(fp, "  c.le.s $f1,$f2\n");
-                    fprintf(fp, "  bc1t %s\n", h->result.id);
-                }
-                else if (h->op == JLT)
-                {
-                    fprintf(fp, "  c.lt.s $f1,$f2\n");
-                    fprintf(fp, "  bc1t %s\n", h->result.id);
-                }
-                else if (h->op == JGE)
-                {
-                    fprintf(fp, "  c.lt.s $f1,$f2\n");
-                    fprintf(fp, "  bc1f %s\n", h->result.id);
-                }
-                else if (h->op == JGT)
-                {
-                    fprintf(fp, "  c.le.s $f1,$f2\n");
-                    fprintf(fp, "  bc1f %s\n", h->result.id);
-                }
-                else if (h->op == EQ)
-                {
-                    fprintf(fp, "  c.eq.s $f1,$f2\n");
-                    fprintf(fp, "  bc1t %s\n", h->result.id);
-                }
-                else
-                {
-                    fprintf(fp, "  c.eq.s $f1,$f2\n");
-                    fprintf(fp, "  bc1f %s\n", h->result.id);
-                }
-            }
+            bool_gen(h, fp);
             break;
         case EXP_JLE:
         case EXP_JLT:
@@ -366,14 +282,115 @@ void objectCode(struct codenode *head)
             fprintf(fp, "  lw $v0,%d($sp)\n", h->result.offset); // 返回值送到$v0
             fprintf(fp, "  jr $ra\n");
             break;
-        // case ARRAY_CALL:
-        //     // temp24 -> v2[temp14]
-        //     fprintf(fp, "  lw $t1, %d\n", h->opn1.offset);
-        //     fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
-
-        //     break;
         }
         h = h->next;
     } while (h != head);
     fclose(fp);
+}
+
+void bool_gen(codenode* h, FILE* fp)
+{
+if (h->opn1.type == INT && h->opn2.type == INT)
+            {
+                fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
+                fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
+                if (h->op == JLE)
+                    fprintf(fp, "  ble $t1,$t2,%s\n", h->result.id);
+                else if (h->op == JLT)
+                    fprintf(fp, "  blt $t1,$t2,%s\n", h->result.id);
+                else if (h->op == JGE)
+                    fprintf(fp, "  bge $t1,$t2,%s\n", h->result.id);
+                else if (h->op == JGT)
+                    fprintf(fp, "  bgt $t1,$t2,%s\n", h->result.id);
+                else if (h->op == EQ)
+                    fprintf(fp, "  beq $t1,$t2,%s\n", h->result.id);
+                else
+                    fprintf(fp, "  bne $t1,$t2,%s\n", h->result.id);
+            }
+            else
+            {
+                // load and covert to float
+                if (h->opn1.type == INT)
+                {
+                    fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
+                    fprintf(fp, "  mtc1 $t1, $f1\n");
+                    fprintf(fp, "  cvt.s.w $f1, $f1\n");
+                }
+                else
+                    fprintf(fp, "  l.s $f2, %d($sp)\n", h->opn1.offset);
+                if (h->opn2.type == INT)
+                {
+                    fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
+                    fprintf(fp, "  mtc1 $t2, $f2\n");
+                    fprintf(fp, "  cvt.s.w $f2, $f2\n");
+                }
+                else
+                    fprintf(fp, "  l.s $f1, %d($sp)\n", h->opn2.offset);
+
+                if (h->op == JLE)
+                {
+                    fprintf(fp, "  c.le.s $f1,$f2\n");
+                    fprintf(fp, "  bc1t %s\n", h->result.id);
+                }
+                else if (h->op == JLT)
+                {
+                    fprintf(fp, "  c.lt.s $f1,$f2\n");
+                    fprintf(fp, "  bc1t %s\n", h->result.id);
+                }
+                else if (h->op == JGE)
+                {
+                    fprintf(fp, "  c.lt.s $f1,$f2\n");
+                    fprintf(fp, "  bc1f %s\n", h->result.id);
+                }
+                else if (h->op == JGT)
+                {
+                    fprintf(fp, "  c.le.s $f1,$f2\n");
+                    fprintf(fp, "  bc1f %s\n", h->result.id);
+                }
+                else if (h->op == EQ)
+                {
+                    fprintf(fp, "  c.eq.s $f1,$f2\n");
+                    fprintf(fp, "  bc1t %s\n", h->result.id);
+                }
+                else
+                {
+                    fprintf(fp, "  c.eq.s $f1,$f2\n");
+                    fprintf(fp, "  bc1f %s\n", h->result.id);
+                }
+            }
+}
+
+// return: the if exist float, return to f1, f2, else return to t1 t2
+void read_data(codenode* h, FILE* fp)    // read from pointer, if another is not pointer, read the type
+{
+    if(h->opn1.kind == ARRAY_POINTER)
+    {
+        fprintf(fp, "  li $t4, %d\n", h->opn1.offset);
+        fprintf(fp, "  addu $t4, $t4, $sp\n");
+        fprintf(fp, "  lw $t1, ($t4)\n");
+    } else
+        fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
+    
+    if(h->opn2.kind == ARRAY_POINTER)
+    {
+        fprintf(fp, "  li $t4, %d\n", h->opn2.offset);
+        fprintf(fp, "  addu $t4, $t4, $sp\n");
+        fprintf(fp, "  lw $t2, ($t4)\n");
+    } else
+        fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
+
+    if(h->opn1.type==FLOAT || h->opn2.type == FLOAT)
+    {
+        if (h->opn1.type == INT)
+        {
+            fprintf(fp, "  mtc1 $t1, $f1\n");
+            fprintf(fp, "  cvt.s.w $f1, $f1\n");
+        }
+        if (h->opn2.type == INT)
+        {
+            fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
+            fprintf(fp, "  mtc1 $t2, $f2\n");
+            fprintf(fp, "  cvt.s.w $f2, $f2\n");
+        }
+    }
 }

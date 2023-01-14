@@ -5,7 +5,6 @@
 #include "string.h"
 #include "stdarg.h"
 #include "vector.h"
-#include "stringSet.h"
 #include "parser.tab.h"
 #define MAXLENGTH   200
 #define DX 3*sizeof(int)          /*活动记录控制信息需要的单元数，这个根据实际系统调整*/

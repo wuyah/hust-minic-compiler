@@ -25,115 +25,80 @@ write:
   jr $ra
 
 main:
-  addi $sp, $sp, -140
-  li $t3, 1
-  sw $t3, 68($sp)
-  lw $t1, 68($sp)
-  sw $t1, 64($sp)
-  li $t3, 0
-  sw $t3, 72($sp)
-  li $t3, 1
-  sw $t3, 140($sp)
-  lw $t1, 64($sp)
-  lw $t2, 140($sp)
-  sub $t3,$t1,$t2
-  sw $t3, 80($sp)
-  li $t3, 1
-  sw $t3, 152($sp)
-  lw $t1, 80($sp)
-  lw $t2, 152($sp)
-  add $t3,$t1,$t2
-  sw $t3, 88($sp)
-  li $t3, 4
-  sw $t3, 108($sp)
-  lw $t1, 108($sp)
-  lw $t2, 88($sp)
-  mul $t3,$t1,$t2
-  sw $t3, 112($sp)
-  lw $t1, 112($sp)
-  lw $t2, 72($sp)
-  add $t3,$t1,$t2
-  sw $t3, 72($sp)
-  li $t3, 12
-  sw $t3, 116($sp)
-  lw $t1, 116($sp)
-  lw $t2, 104($sp)
-  mul $t3,$t1,$t2
-  sw $t3, 120($sp)
-  lw $t1, 120($sp)
-  lw $t2, 72($sp)
-  add $t3,$t1,$t2
-  sw $t3, 72($sp)
-  li $t3, 24
-  sw $t3, 124($sp)
-  lw $t1, 124($sp)
-  lw $t2, 64($sp)
-  mul $t3,$t1,$t2
-  sw $t3, 128($sp)
-  lw $t1, 128($sp)
-  lw $t2, 72($sp)
-  add $t3,$t1,$t2
-  sw $t3, 72($sp)
-  li $t3, 20
-  sw $t3, 136($sp)
-  lw $t1, 136($sp)
-  sw $t1, 132($sp)
-  li $t3, 0
-  sw $t3, 72($sp)
-  li $t3, 1
-  sw $t3, 140($sp)
-  lw $t1, 64($sp)
-  lw $t2, 140($sp)
-  sub $t3,$t1,$t2
-  sw $t3, 80($sp)
-  li $t3, 1
-  sw $t3, 152($sp)
-  lw $t1, 80($sp)
-  lw $t2, 152($sp)
-  add $t3,$t1,$t2
-  sw $t3, 88($sp)
-  li $t3, 4
-  sw $t3, 108($sp)
-  lw $t1, 108($sp)
-  lw $t2, 88($sp)
-  mul $t3,$t1,$t2
-  sw $t3, 112($sp)
-  lw $t1, 112($sp)
-  lw $t2, 72($sp)
-  add $t3,$t1,$t2
-  sw $t3, 72($sp)
-  li $t3, 12
-  sw $t3, 116($sp)
-  lw $t1, 116($sp)
-  lw $t2, 104($sp)
-  mul $t3,$t1,$t2
-  sw $t3, 120($sp)
-  lw $t1, 120($sp)
-  lw $t2, 72($sp)
-  add $t3,$t1,$t2
-  sw $t3, 72($sp)
-  li $t3, 24
-  sw $t3, 124($sp)
-  lw $t1, 124($sp)
-  lw $t2, 64($sp)
-  mul $t3,$t1,$t2
-  sw $t3, 128($sp)
-  lw $t1, 128($sp)
-  lw $t2, 72($sp)
-  add $t3,$t1,$t2
-  sw $t3, 72($sp)
-  li $t1, 132
+  addi $sp, $sp, -56
+  li.s $f3, 0.000000
+  s.s $f3, 20($sp)
+  li $t1, 20
   addu $t1, $t1, $sp
   lw $t3, ($t1)
-  sw $t3, 60($sp)
-  lw $a0, 60($sp)
+  sw $t3, 12($sp)
+  li $t3, 2
+  sw $t3, 20($sp)
+  lw $t1, 20($sp)
+  sw $t1, 16($sp)
+  l.s $f1, 12($sp)
+  li.s $f2, 0.0
+  c.eq.s $f1, $f2
+  cfc1 $t0, $31
+  sne $t3, $t0, $zero
+  sw $t3, 20($sp)
+  l.s $f1, 20($sp)
+  li.s $f2, 0.0
+  c.eq.s $f1, $f2
+  cfc1 $t0, $31
+  sne $t3, $t0, $zero
+  sw $t3, 24($sp)
+  li $t1, 24
+  addu $t1, $t1, $sp
+  lw $t3, ($t1)
+  sw $t3, 16($sp)
+  li $t3, 2
+  sw $t3, 20($sp)
+  li $t3, 3
+  sw $t3, 40($sp)
+  lw $t1, 20($sp)
+  lw $t2, 40($sp)
+  lw $t1, 20($sp)
+  lw $t2, 40($sp)
+  add $t3,$t1,$t2
+  sw $t3, 28($sp)
+  li $t3, 4
+  sw $t3, 40($sp)
+  li $t3, 5
+  sw $t3, 80($sp)
+  lw $t1, 40($sp)
+  lw $t2, 80($sp)
+  lw $t1, 40($sp)
+  lw $t2, 80($sp)
+  mul $t3,$t1,$t2
+  sw $t3, 48($sp)
+  li $t3, 2
+  sw $t3, 80($sp)
+  lw $t1, 48($sp)
+  lw $t2, 80($sp)
+  lw $t1, 48($sp)
+  lw $t2, 80($sp)
+  div $t1, $t2
+  mflo $t3
+  sw $t3, 56($sp)
+  lw $t1, 28($sp)
+  lw $t2, 56($sp)
+  lw $t1, 28($sp)
+  lw $t2, 56($sp)
+  add $t3,$t1,$t2
+  sw $t3, 52($sp)
+  li $t1, 52
+  addu $t1, $t1, $sp
+  lw $t3, ($t1)
+  sw $t3, 16($sp)
+  lw $a0, 16($sp)
   addi $sp, $sp, -4
   sw $ra,0($sp)
   jal write
   lw $ra,0($sp)
   addi $sp, $sp, 4
   li $t3, 0
-  sw $t3, 72($sp)
-  lw $v0,72($sp)
+  sw $t3, 20($sp)
+  lw $v0,20($sp)
   jr $ra
 label1:

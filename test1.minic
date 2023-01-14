@@ -1,8 +1,14 @@
 // a test for not && write && float/int object code
 
+/*asa
+*** \\dst       \b
+da//*   [][][]cs***
+***/
+
 int main()
 {
     float a;
+    /**/
     int b;
     a = 0.0;
     b=2;

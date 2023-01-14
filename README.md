@@ -40,10 +40,10 @@ current finished:
 - array dec/ array call ast finished 1.8
 - oneline comment finished using lex.l
 - read()/write() function can be called immediately
+- int array finished
 
 TODO:
 - DPLUS DMINUS calculate(they should only work for INT)
-- array expression(half finished)
 - struct expression
 - type error in function return
 - AND OR operator(INT and FLOAT)
