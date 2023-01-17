@@ -69,9 +69,9 @@ void Exp(struct ASTNode *T)
             assignExp(T);
             break;
         // TODO this part is used to calculate the boolExp's value
-        case AND:   // 按算术表达式方式计算布尔值，未写完
-        case OR:    // 按算术表达式方式计算布尔值，未写完
-        case RELOP: // 按算术表达式方式计算布尔值，未写完
+        case AND:   
+        case OR:    
+        case RELOP: 
             T->type = INT;
             T->Exp1->offset = T->offset;
             T->Exp2->offset = T->offset + T->Exp1->width;
@@ -336,7 +336,6 @@ void assignExp(ASTNode* T)
     }
     else
     {
-        printf("Test1\n");
         if(T->Exp1->kind==ID)
             rtn = searchSymbolTable(T->Exp1->type_id);
         else

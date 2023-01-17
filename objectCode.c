@@ -1,7 +1,10 @@
 #include "def.h"
 
+char filename[33];
+
 void bool_gen(codenode* h, FILE* fp);
 void read_data(codenode* h, FILE* fp);
+void gen_write_func(codenode* h, FILE* fp);
 
 // 输出目标代码
 void objectCode(struct codenode *head)
@@ -10,7 +13,8 @@ void objectCode(struct codenode *head)
     struct codenode *h = head, *p;
     int i;
     FILE *fp;
-    fp = fopen("object.s", "w");
+    strcat(filename,".s");
+    fp = fopen(filename, "w");
     if (!fp)
     {
         printf("failed to open file object.s\n");
@@ -104,8 +108,6 @@ void objectCode(struct codenode *head)
             else
             {
                 // load and covert to float
-                
-
                 if (h->op == PLUS)
                     fprintf(fp, "  add.s $f3,$f1,$f2\n");
                 else if (h->op == MINUS)
@@ -249,12 +251,7 @@ void objectCode(struct codenode *head)
             }
             if (!strcmp(h->opn1.id, "write"))
             { // 特殊处理write
-                fprintf(fp, "  lw $a0, %d($sp)\n", h->prior->result.offset);
-                fprintf(fp, "  addi $sp, $sp, -4\n");
-                fprintf(fp, "  sw $ra,0($sp)\n");
-                fprintf(fp, "  jal write\n");
-                fprintf(fp, "  lw $ra,0($sp)\n");
-                fprintf(fp, "  addi $sp, $sp, 4\n");
+                gen_write_func(h, fp);
                 break;
             }
 
@@ -380,17 +377,32 @@ void read_data(codenode* h, FILE* fp)    // read from pointer, if another is not
         fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
 
     if(h->opn1.type==FLOAT || h->opn2.type == FLOAT)
-    {
+    {            
+        fprintf(fp, "  mtc1 $t1, $f1\n");
+        fprintf(fp, "  mtc1 $t2, $f2\n");
         if (h->opn1.type == INT)
         {
-            fprintf(fp, "  mtc1 $t1, $f1\n");
             fprintf(fp, "  cvt.s.w $f1, $f1\n");
-        }
+        } 
         if (h->opn2.type == INT)
         {
-            fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
-            fprintf(fp, "  mtc1 $t2, $f2\n");
             fprintf(fp, "  cvt.s.w $f2, $f2\n");
         }
     }
+}
+
+void gen_write_func(codenode* h, FILE* fp)
+{
+    if(h->prior->result.kind == ARRAY_POINTER)
+    {
+        fprintf(fp, "  li $t4, %d\n", h->prior->result.offset);
+        fprintf(fp, "  addu $t4, $t4, $sp\n");
+        fprintf(fp, "  lw $a0, ($t4)\n");
+    }else
+        fprintf(fp, "  lw $a0, %d($sp)\n", h->prior->result.offset);
+    fprintf(fp, "  addi $sp, $sp, -4\n");
+    fprintf(fp, "  sw $ra,0($sp)\n");
+    fprintf(fp, "  jal write\n");
+    fprintf(fp, "  lw $ra,0($sp)\n");
+    fprintf(fp, "  addi $sp, $sp, 4\n");
 }

@@ -8,8 +8,13 @@ da//*   [][][]cs***
 int main()
 {
     float a;
-    /**/
     int b;
+    int c = 1;
+    int d = 0;
+    b = c && d;
+    write(b);
+    b = c || d;
+    write(b);
     a = 0.0;
     b=2;
     b = !!a;

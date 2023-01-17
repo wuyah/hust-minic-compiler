@@ -10,6 +10,7 @@
 #define DX 3*sizeof(int)          /*活动记录控制信息需要的单元数，这个根据实际系统调整*/
 
 extern int LEV;      //层号
+extern char filename[33];
 
 // TAC operator property
 struct opn{

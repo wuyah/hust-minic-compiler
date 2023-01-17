@@ -1,16 +1,16 @@
 /* %error-verbose */
 %locations
 %{
-#include "stdio.h"
-#include "math.h"
-#include "string.h"
-#include "def.h"
-extern int yylineno;
-extern char *yytext;
-extern FILE *yyin;
-void yyerror(const char* fmt, ...);
-void display(struct ASTNode *,int);
-int yylex();
+        #include "stdio.h"
+        #include "math.h"
+        #include "string.h"
+        #include "def.h"
+        extern int yylineno;
+        extern char *yytext;
+        extern FILE *yyin;
+        void yyerror(const char* fmt, ...);
+        void display(struct ASTNode *,int);
+        int yylex();
 %}
 
 %union {
@@ -30,14 +30,17 @@ int yylex();
     
 %token DPLUS DMINUS GE GT LE LP LT NE RP LB RB LC RC LA RA SEMI COMMA     /*用bison对该文件编译时，带参数-d，生成的exp.tab.h中给这些单词进行编码，可在lex.l中包含parser.tab.h使用这些单词种类码*/
 %token PLUS MINUS STAR DIV ASSIGNOP AND OR NOT IF ELSE WHILE RETURN STRUCT FOR SWITCH CASE COLON DEFAULT 
+/* token for cotinue break */
 %token CONTINUE BREAK
 /*以下为接在上述token后依次编码的枚举常量，作为AST结点类型标记*/
 %token EXT_DEF_LIST EXT_VAR_DEF FUNC_DEF FUNC_DEC EXT_DEC_LIST PARAM_LIST PARAM_DEC VAR_DEF DEC_LIST DEF_LIST COMP_STM STM_LIST EXP_STMT IF_THEN IF_THEN_ELSE
 %token FUNC_CALL ARGS FUNCTION PARAM ARG CALL LABEL GOTO JLT JLE JGT JGE EQ NEQ
 /* token for exp relop */
 %token EXP_JLT EXP_JLE EXP_JGT EXP_JGE EXP_EQ EXP_NEQ
-/*  */
+/* token for array */
 %token ARRAY_CALL ARRAY_DEC ANNOTATION ARRAY_POINTER
+/* token for dminus dplus */
+%token DMINUS_L DMINUS_R DPLUS_L DPLUS_R
 
 %left ASSIGNOP
 %left OR
@@ -45,9 +48,9 @@ int yylex();
 %left RELOP
 %left PLUS MINUS
 %left STAR DIV
-%left LB RB
+%left  RB
 %right NOT DPLUS DMINUS
-%right UMINUS
+%right UMINUS LB
 %nonassoc LOWER_THEN_ELSE
 %nonassoc ELSE
 
@@ -167,9 +170,9 @@ Exp:
         | NOT Exp       {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=NOT;
                                         $$->pos=yylineno;   $$->Exp1=$2;strcpy($$->type_id,"NOT");}
         /* TODO DMINUS DPLUS */
-        | DPLUS  Exp            {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=DPLUS;strcpy($$->type_id,"DPLUS");
+        | DPLUS  Exp            {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=DPLUS_L;strcpy($$->type_id,"DPLUS");
                                         $$->pos=yylineno;   $$->Exp1=$2;}  //这里仅有前缀，还需后缀形式，以及--
-        | Exp DPLUS             {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=DPLUS;strcpy($$->type_id,"DPLUS");
+        | Exp DPLUS             {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=DPLUS_R;strcpy($$->type_id,"DPLUS");
                                         $$->pos=yylineno;   $$->Exp1=$1;}
         | DMINUS Exp            {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=DMINUS; strcpy($$->type_id,"DMINUS");
                                         $$->pos=yylineno;  $$->Exp1=$2;}
@@ -205,6 +208,8 @@ Args:    Exp COMMA Args    {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=ARGS
 int main(int argc, char *argv[]){
 	yyin=fopen(argv[1],"r");
 	if (!yyin) return 0;
+        strcpy(filename, argv[1]);
+        printf("filename:%s\n", filename);
 	yylineno=1;
 	yyparse();
 	return 0;

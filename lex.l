@@ -16,6 +16,7 @@ typedef union {
 	int type_int;
 	int type_float;
 	char type_id[32];
+	char type_char;
 	// struct ASTNode *ptr;
 } YYLVAL;
 #define YYSTYPE YYLVAL
@@ -23,18 +24,21 @@ int lastToken;
 
 %}
 
-%x comment
+%x comment string
 
 singleLineComment 	"//"[^\n]*
 blockCommentStart 		"/"+"*"
 blockCommentEnd			"*"+"/"
+stringBlock				"\""
 
 id   [A-Za-z][A-Za-z0-9]*  
 intconst    [0-9]+
 floatconst  [0-9]*\.?[0-9]?([eE][-+]?[0-9]+)?
+charconst	"\'"[]
 %%
 "int"       {strcpy(yylval.type_id,  yytext);return TYPE;}
 "float"     {strcpy(yylval.type_id,  yytext);return TYPE;}
+"char"		{strcpy(yylval.type_id,  yytext);return TYPE;}
 
 "continue"	{return CONTINUE;}
 "break"		{return BREAK;}
@@ -69,9 +73,18 @@ floatconst  [0-9]*\.?[0-9]?([eE][-+]?[0-9]+)?
 
 {intconst}          {yylval.type_int=atoi(yytext);  return INT;}
 {floatconst}        {yylval.type_float=atof(yytext);return FLOAT;}
+
+
 {singleLineComment}	{}
 {blockCommentStart}				{BEGIN(comment);}
 <comment>{blockCommentEnd}		{BEGIN(INITIAL);}
+<comment><<EOF>>				{printf("%sat line%d: Block Comment miss final synax\n",yytext,yylineno);return 0;}
+
+{stringBlock}					{BEGIN(string);}
+<string>[^\"\n]					{}
+<string>\n						{printf("%sat line%d: String inline enter\n",yytext,yylineno);return 0;}
+<string>{stringBlock}			{BEGIN(INITIAL);}
+<string><<EOF>>				{printf("%sat line%d: String miss final synax\n",yytext,yylineno);return 0;}
 
 [ \r\t]             {}   
 

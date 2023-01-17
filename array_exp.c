@@ -43,7 +43,8 @@ void arrayExp(ASTNode *T)
         T0->offset = T->offset + T->width;
         T0->width = T->width;
         rtn = searchSymbolTable(T0->type_id);
-
+        T0->type = symbolTable.symbols[rtn].type - ARRAY_DEC;
+        T->type = T0->type;
         if (rtn == -1)
             semantic_error(T->pos, T->type_id, "变量未定义");
         else if (symbolTable.symbols[rtn].flag == 'F')
@@ -100,10 +101,10 @@ void arrayExp(ASTNode *T)
             T->width += 4;
             // res:opn1(temp) | opn1:id(opn2) | opn2:offset(result opn)
             // temp
-            opn1.kind = ARRAY_POINTER; opn1.type = T0->type; opn1.offset = symbolTable.symbols[return_position].offset;
+            opn1.kind = ARRAY_POINTER; opn1.type = T->type; opn1.offset = symbolTable.symbols[return_position].offset;
             strcpy(opn1.id, symbolTable.symbols[return_position].alias);
             // opn2
-            opn2.kind = ID; opn2.type = T0->type; opn2.offset = symbolTable.symbols[rtn].offset;
+            opn2.kind = ID; opn2.type = T->type; opn2.offset = symbolTable.symbols[rtn].offset;
             strcpy(opn2.id, symbolTable.symbols[rtn].alias);
             result.kind = ID; result.type = INT; result.offset = offset_place;
             strcpy(result.id, symbolTable.symbols[offset_place].alias);
@@ -113,7 +114,6 @@ void arrayExp(ASTNode *T)
             T->kind = ARRAY_CALL;
             // TODO: a[b] := 0; c := a[b] we need to geenrate a pointer which -> the target mem
             // and then if we assign, we directly assign to the target
-
             // the resolution is when it comes like `temp9 -> v3[temp4]`
             // we assign the temp9's offset to v3.offset + temp4.typeint. and this need to 
             // li 

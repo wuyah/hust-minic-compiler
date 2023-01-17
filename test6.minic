@@ -2,15 +2,14 @@
 
 int main()
 {
-    int a[2][2][3];
+    int a[2];
     int g;
     int c = 1;
-    a[c][1][c-1+1] = 20;
-    g = a[c][1][c-1+1];
+    a[0]=1;
+    g = a[0] + 1;
     write(g);
     g = g + 1;
     write(g);
-    a[c][1][c-1+1+1] = 30;
-    write(a[c][1][c-1+1+1]);
+    write(a[0]);
     return 0;
 }
