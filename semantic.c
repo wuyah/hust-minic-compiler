@@ -6,6 +6,10 @@ int LEV;
 
 symboltable symbolTable;
 symbol_scope_begin symbol_scope_TX;
+ir_listnode* break_code_stack;
+ir_listnode* continue_code_stack;
+
+int loop_scope = 0;
 
 void ext_var_list(struct ASTNode *T)
 {  //处理变量列表
@@ -32,7 +36,7 @@ void ext_var_list(struct ASTNode *T)
         }
 }
 
-int  match_param(int i,struct ASTNode *T)
+int match_param(int i,struct ASTNode *T)
 {  //i代表函数名在符号表中的位置
     int j,num=symbolTable.symbols[i].paramnum;
     if (num==0 && T==NULL) return 1;//无参函数
@@ -343,9 +347,14 @@ void semantic_Analysis(struct ASTNode *T)
                 boolExp(T->Cond);      //循环条件，要单独按短路代码处理
                 T->width=T->Cond->width;
                 strcpy(T->Body->Snext,newLabel());
+                loop_scope++;
+                ir_ln_push(&break_code_stack, genGoto(T->Cond->Efalse));
+                ir_ln_push(&continue_code_stack, genGoto(T->Body->Snext));
                 semantic_Analysis(T->Body);      //循环体
+                ir_ln_pop(&continue_code_stack);
+                ir_ln_pop(&break_code_stack);
+                loop_scope--;
                 if (T->width < T->Body->width) T->width=T->Body->width;
-
                 T->code=merge(5,genLabel(T->Body->Snext),T->Cond->code, \
                     genLabel(T->Cond->Etrue),T->Body->code,genGoto(T->Body->Snext));
                 break;
@@ -359,10 +368,19 @@ void semantic_Analysis(struct ASTNode *T)
                 T->Exp2->offset = T->Exp1->offset;
                 boolExp(T->Exp2);
                 T->width = T->Exp2->width;
+                
                 strcpy(T->Body->Snext,newLabel());
                 strcpy(T->Exp3->Snext,newLabel());
                 T->Body->offset = T->offset;
+
+                loop_scope++;
+                ir_ln_push(&break_code_stack, genGoto(T->Exp2->Efalse));
+                ir_ln_push(&continue_code_stack, genGoto(T->Body->Snext));  // execute exp3
                 semantic_Analysis(T->Body);
+                ir_ln_pop(&continue_code_stack);
+                ir_ln_pop(&break_code_stack);
+                loop_scope--;
+
                 T->Exp3->offset = T->Body->offset + T->Body->width;
                 semantic_Analysis(T->Exp3);
                 if (T->width < (T->Body->width + T->Exp3->width)) T->width=T->Body->width + T->Exp3->width;
@@ -393,6 +411,18 @@ void semantic_Analysis(struct ASTNode *T)
                     T->code=genIR(RETURN,opn1,opn2,result);
                 }
                 break;
+    case BREAK:
+            if(loop_scope==0)
+                semantic_error(T->pos, "", "break not in loop!");
+            else
+                T->code = merge(2, T->code, ir_ln_top(continue_code_stack));
+            break;
+    case CONTINUE:
+            if(loop_scope==0)
+                semantic_error(T->pos, "", "break not in loop!");
+            else
+                T->code = merge(2, T->code, ir_ln_top(continue_code_stack));
+            break;
     case ARRAY_CALL:
 	case ID:
     case INT:

@@ -1,0 +1,44 @@
+int main()
+{
+    int i,j,k;
+    i = 0;
+    while(i<5)
+    {
+        j = 0;
+        while(j<3)
+        {
+            j++;
+            if(j==1)
+            {
+                break;
+            }
+        }
+        write(j);
+        if(i==3)
+        {
+            break;
+        }
+        i++;
+    }
+    write(i);
+
+    for(i=0;i<5;i++)
+    {
+        j = 0;
+        while(j<3)
+        {
+            j++;
+            if(j==2)
+            {
+                break;
+            }
+        }
+        write(j);
+        if(i==3)
+        {
+            break;
+        }
+    }
+    write(i);
+    return 0;
+}

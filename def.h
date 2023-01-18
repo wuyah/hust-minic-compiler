@@ -110,6 +110,13 @@ typedef struct symbol_scope_begin {
     int top;
 } symbol_scope_begin;
 
+typedef struct ir_listnode
+{
+    codenode* ir;
+    struct ir_listnode* next;
+}ir_listnode;
+
+
 extern symbol_scope_begin symbol_scope_TX;
 
 struct ASTNode * mknode(int num,int kind,int pos,...);
@@ -138,5 +145,10 @@ int fill_Temp(char *name,int level,int type,char flag,int offset);
 void prn_symbol();
 int  match_param(int i,struct ASTNode *T);
 int fill_arr_length(int index, int length);
-
 void semantic_error(int line,char *msg1,char *msg2);
+
+// function for ir_listnode
+void ir_ln_push(ir_listnode** p, codenode* ir);
+codenode* ir_ln_pop(ir_listnode** p);
+void ir_ln_init(ir_listnode* p, codenode* ir);
+codenode* ir_ln_top(ir_listnode *p);

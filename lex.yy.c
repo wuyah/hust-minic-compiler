@@ -1013,79 +1013,79 @@ YY_RULE_SETUP
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 77 "lex.l"
+#line 76 "lex.l"
 {}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 78 "lex.l"
+#line 77 "lex.l"
 {BEGIN(comment);}
 	YY_BREAK
 case 35:
 /* rule 35 can match eol */
 YY_RULE_SETUP
-#line 79 "lex.l"
+#line 78 "lex.l"
 {}
 	YY_BREAK
 case 36:
 /* rule 36 can match eol */
 YY_RULE_SETUP
-#line 80 "lex.l"
+#line 79 "lex.l"
 {}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 81 "lex.l"
+#line 80 "lex.l"
 {BEGIN(INITIAL);}
 	YY_BREAK
 case YY_STATE_EOF(comment):
-#line 82 "lex.l"
+#line 81 "lex.l"
 {printf("%sat line%d: Block Comment miss final synax\n",yytext,yylineno);return 0;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 84 "lex.l"
+#line 83 "lex.l"
 {BEGIN(string);}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 85 "lex.l"
+#line 84 "lex.l"
 {}
 	YY_BREAK
 case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
-#line 86 "lex.l"
+#line 85 "lex.l"
 {printf("%sat line%d: String inline enter\n",yytext,yylineno);return 0;}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 87 "lex.l"
+#line 86 "lex.l"
 {BEGIN(INITIAL);}
 	YY_BREAK
 case YY_STATE_EOF(string):
-#line 88 "lex.l"
+#line 87 "lex.l"
 {printf("%sat line%d: String miss final synax\n",yytext,yylineno);return 0;}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 90 "lex.l"
+#line 89 "lex.l"
 {}   
 	YY_BREAK
 case 43:
 /* rule 43 can match eol */
 YY_RULE_SETUP
-#line 92 "lex.l"
+#line 91 "lex.l"
 {yycolumn=1;}   
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 93 "lex.l"
+#line 92 "lex.l"
 {printf("Error type A :Mysterious character \"%s\"\n\t at Line %d\n",yytext,yylineno);}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 95 "lex.l"
+#line 94 "lex.l"
 ECHO;
 	YY_BREAK
 #line 1092 "lex.yy.c"
@@ -2105,7 +2105,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 95 "lex.l"
+#line 94 "lex.l"
 
 
 /* 和bison联用时，不需要这部分

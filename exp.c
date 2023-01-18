@@ -265,7 +265,10 @@ void Exp(struct ASTNode *T)
             T0 = T->Args;
             while (T0)
             { // 用ARG依次列出实参表达式的值
-                result.kind = ID;
+                if(T0->Exp1->kind==ARRAY_CALL)
+                    result.kind = ARRAY_POINTER;
+                else
+                    result.kind = ID;
                 strcpy(result.id, symbolTable.symbols[T0->Exp1->place].alias);
                 result.offset = symbolTable.symbols[T0->Exp1->place].offset;
                 T->code = merge(2, T->code, genIR(ARG, opn1, opn2, result));

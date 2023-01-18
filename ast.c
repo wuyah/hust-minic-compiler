@@ -169,9 +169,10 @@ void display(struct ASTNode *T,int indent)
                     }
                     printf("\n");
                     break;
-    default:
-                    printf("Unknow Node!\n");
-                    break;
+    case BREAK:
+                    printf("%*cBREAK Node!\n", indent, ' ');
+    case CONTINUE:
+                    printf("%*cCONTINUE Node!\n", indent, ' ');
         }
     }
 }

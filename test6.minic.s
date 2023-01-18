@@ -38,25 +38,21 @@ main:
   sw $t3, 40($sp)
   lw $t1, 40($sp)
   lw $t2, 36($sp)
-  lw $t1, 40($sp)
-  lw $t2, 36($sp)
   mul $t3,$t1,$t2
   sw $t3, 44($sp)
-  lw $t1, 44($sp)
-  lw $t2, 32($sp)
   lw $t1, 44($sp)
   lw $t2, 32($sp)
   add $t3,$t1,$t2
   sw $t3, 32($sp)
   li $t1, 12
-  lw $t2, 8($sp)
+  lw $t2, 32($sp)
   add $t2, $t2, $t1
-  sw $t3, 48($sp)
+  sw $t2, 48($sp)
   li $t3, 1
   sw $t3, 52($sp)
   lw $t1, 52($sp)
-s
   lw $t2, 48($sp)
+  add $t2, $t2, $sp
   sw $t1, ($t2)
   li $t3, 0
   sw $t3, 32($sp)
@@ -66,24 +62,18 @@ s
   sw $t3, 40($sp)
   lw $t1, 40($sp)
   lw $t2, 36($sp)
-  lw $t1, 40($sp)
-  lw $t2, 36($sp)
   mul $t3,$t1,$t2
   sw $t3, 44($sp)
-  lw $t1, 44($sp)
-  lw $t2, 32($sp)
   lw $t1, 44($sp)
   lw $t2, 32($sp)
   add $t3,$t1,$t2
   sw $t3, 32($sp)
   li $t1, 12
-  lw $t2, 14($sp)
+  lw $t2, 32($sp)
   add $t2, $t2, $t1
-  sw $t3, 48($sp)
+  sw $t2, 48($sp)
   li $t3, 1
   sw $t3, 64($sp)
-  lw $t1, 48($sp)
-  lw $t2, 64($sp)
   lw $t1, 48($sp)
   lw $t2, 64($sp)
   add $t3,$t1,$t2
@@ -98,8 +88,6 @@ s
   addi $sp, $sp, 4
   li $t3, 1
   sw $t3, 52($sp)
-  lw $t1, 20($sp)
-  lw $t2, 52($sp)
   lw $t1, 20($sp)
   lw $t2, 52($sp)
   add $t3,$t1,$t2
@@ -120,21 +108,19 @@ s
   sw $t3, 40($sp)
   lw $t1, 40($sp)
   lw $t2, 36($sp)
-  lw $t1, 40($sp)
-  lw $t2, 36($sp)
   mul $t3,$t1,$t2
   sw $t3, 44($sp)
-  lw $t1, 44($sp)
-  lw $t2, 32($sp)
   lw $t1, 44($sp)
   lw $t2, 32($sp)
   add $t3,$t1,$t2
   sw $t3, 32($sp)
   li $t1, 12
-  lw $t2, 25($sp)
+  lw $t2, 32($sp)
   add $t2, $t2, $t1
-  sw $t3, 48($sp)
-  lw $a0, 48($sp)
+  sw $t2, 48($sp)
+  lw $t4, 48($sp)
+  add $t4, $t4, $sp
+  lw $a0, ($t4)
   addi $sp, $sp, -4
   sw $ra,0($sp)
   jal write

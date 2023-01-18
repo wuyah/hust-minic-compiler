@@ -73,7 +73,6 @@ floatconst  [0-9]*\.?[0-9]?([eE][-+]?[0-9]+)?
 {intconst}          {yylval.type_int=atoi(yytext);  return INT;}
 {floatconst}        {yylval.type_float=atof(yytext);return FLOAT;}
 
-
 {singleLineComment}	{}
 {blockCommentStart}				{BEGIN(comment);}
 <comment>[^\*]					{}

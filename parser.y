@@ -116,6 +116,10 @@ Stm:   Exp SEMI                         {$$=(ASTNode *)malloc(sizeof(ASTNode)); 
                                                $$->pos=$3->pos;   $$->Cond=$3; $$->Body=$5;}
         | FOR LP Exp SEMI Exp SEMI Exp RP Stm           {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=FOR;
                                                                 $$->pos=$3->pos;   $$->Exp1=$3;$$->Exp2=$5;$$->Exp3=$7;$$->Body=$9;}
+        | BREAK SEMI                            {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=BREAK;
+                                                        $$->pos=yylineno; }
+        | CONTINUE SEMI                         {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=CONTINUE;
+                                                        $$->pos=yylineno; }
         ;
 
 DefList: {$$=NULL; }
