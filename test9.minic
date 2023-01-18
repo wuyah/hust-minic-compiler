@@ -1,0 +1,14 @@
+int main()
+{
+    int a[3];
+    int t;
+    int i;
+    a[0] = 20;
+    a[1] = 30;
+    a[2] = 10;
+    
+    i = 0;
+    t = a[i];
+    write(t);
+    return 0;
+}

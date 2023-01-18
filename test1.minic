@@ -15,10 +15,12 @@ int main()
     write(b);
     b = c || d;
     write(b);
-    a = 0.0;
+    a = 1.0;
     b=2;
     b = !!a;
     b = 2+3+4*5/2;
+    write(b);
+    b = -b;
     write(b);
     return 0;
 }

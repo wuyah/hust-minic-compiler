@@ -25,17 +25,15 @@ void arrayExp(ASTNode *T)
     // pushback all the Exp place
     while(T0->kind == ARRAY_CALL)
     {
-        T0->Exp2->offset = T->offset+T->width; 
+        T0->Exp2->offset = T->offset+T->width;
         Exp(T0->Exp2);
         if(T0->Exp2->type != INT)
             semantic_error(T0->pos,"Fatal Error:", "Array's index_type isn't INT\n");
-
         vector_push_back(v, T0->Exp2->place);     
-        T0->width = T0->Exp2->width;
-        T->width += T0->width;
+        T->width += T0->Exp2->width;
         printf("T.width:%d\n", T->width);
-        T->code = merge(2, T->code, T->Exp2->code);
-        T0 = T0->Exp1; 
+        T->code = merge(2, T->code, T0->Exp2->code);
+        T0 = T0->Exp1;
     }
     if(T0->kind==ID)
     {
@@ -78,6 +76,7 @@ void arrayExp(ASTNode *T)
                 // opn2
                 opn2.kind = ID; opn2.type = INT;
                 opn2.offset = symbolTable.symbols[var_pos].offset; 
+                printf("varpos,offsey = %d\n", opn2.offset);
                 strcpy(opn2.id, symbolTable.symbols[var_pos].alias);
                 // res
                 strcpy(result.id, symbolTable.symbols[mul_place].alias);
@@ -106,17 +105,19 @@ void arrayExp(ASTNode *T)
             // opn2
             opn2.kind = ID; opn2.type = T->type; opn2.offset = symbolTable.symbols[rtn].offset;
             strcpy(opn2.id, symbolTable.symbols[rtn].alias);
-            result.kind = ID; result.type = INT; result.offset = offset_place;
+            result.kind = ID; result.type = INT; result.offset = symbolTable.symbols[offset_place].offset;
             strcpy(result.id, symbolTable.symbols[offset_place].alias);
             T->code = merge(2, T->code, genIR(ARRAY_POINTER, opn2, result, opn1));
             
             T->place = return_position;         // save position
             T->kind = ARRAY_CALL;
-            // TODO: a[b] := 0; c := a[b] we need to geenrate a pointer which -> the target mem
-            // and then if we assign, we directly assign to the target
-            // the resolution is when it comes like `temp9 -> v3[temp4]`
-            // we assign the temp9's offset to v3.offset + temp4.typeint. and this need to 
-            // li 
+            /* TODO: a[b] := 0; c := a[b] we need to geenrate a pointer which -> the target mem
+               and then if we assign, we directly assign to the target
+               the resolution is when it comes like `temp9 -> v3[temp4]`
+               we assign the temp9's value to v3.offset + temp4.typeint. and this need to 
+               then when we use temp9 */
+            
+            // final IR h->op is ARRAY_POINTER result->kind==ARRAY_POINTER result
         }
     } else
         semantic_error(T0->pos,"Fatal Error!", "Array Left Must be ID\n");

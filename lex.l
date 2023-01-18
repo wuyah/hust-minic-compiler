@@ -34,7 +34,6 @@ stringBlock				"\""
 id   [A-Za-z][A-Za-z0-9]*  
 intconst    [0-9]+
 floatconst  [0-9]*\.?[0-9]?([eE][-+]?[0-9]+)?
-charconst	"\'"[]
 %%
 "int"       {strcpy(yylval.type_id,  yytext);return TYPE;}
 "float"     {strcpy(yylval.type_id,  yytext);return TYPE;}
@@ -77,6 +76,8 @@ charconst	"\'"[]
 
 {singleLineComment}	{}
 {blockCommentStart}				{BEGIN(comment);}
+<comment>[^\*]					{}
+<comment>"\*"+[^/]				{}
 <comment>{blockCommentEnd}		{BEGIN(INITIAL);}
 <comment><<EOF>>				{printf("%sat line%d: Block Comment miss final synax\n",yytext,yylineno);return 0;}
 

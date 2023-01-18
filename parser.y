@@ -170,13 +170,13 @@ Exp:
         | NOT Exp       {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=NOT;
                                         $$->pos=yylineno;   $$->Exp1=$2;strcpy($$->type_id,"NOT");}
         /* TODO DMINUS DPLUS */
-        | DPLUS  Exp            {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=DPLUS_L;strcpy($$->type_id,"DPLUS");
+        | DPLUS  Exp            {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=DPLUS_L;strcpy($$->type_id,"DPLUS_L");
                                         $$->pos=yylineno;   $$->Exp1=$2;}  //这里仅有前缀，还需后缀形式，以及--
-        | Exp DPLUS             {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=DPLUS_R;strcpy($$->type_id,"DPLUS");
+        | Exp DPLUS             {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=DPLUS_R;strcpy($$->type_id,"DPLUS_R");
                                         $$->pos=yylineno;   $$->Exp1=$1;}
-        | DMINUS Exp            {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=DMINUS; strcpy($$->type_id,"DMINUS");
+        | DMINUS Exp            {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=DMINUS_L; strcpy($$->type_id,"DMINUS_L");
                                         $$->pos=yylineno;  $$->Exp1=$2;}
-        | Exp DMINUS            {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=DMINUS; strcpy($$->type_id,"DMINUS");
+        | Exp DMINUS            {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=DMINUS_R; strcpy($$->type_id,"DMINUS_R");
                                         $$->pos=yylineno;  $$->Exp1=$1;}
         /* TODO need to handle the error of DMINUS/DPLUS*/
         // TODO 

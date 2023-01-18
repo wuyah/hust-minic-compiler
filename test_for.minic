@@ -1,0 +1,14 @@
+int main()
+{
+    int i, j;
+    int a;
+    a = 1;
+    for(i=0;i<3;i++)
+    {
+        for(j=0;j<4;j++)
+        {
+            write(a);
+        }
+    }
+    return 0;
+}

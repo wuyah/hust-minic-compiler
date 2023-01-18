@@ -104,13 +104,13 @@ void prnIR(struct codenode *head)
              sprintf(opnstr1,"#%d",h->opn1.const_int);
         if (h->opn1.kind==FLOAT)
              sprintf(opnstr1,"#%f",h->opn1.const_float);
-        if (h->opn1.kind==ID)
+        if (h->opn1.kind==ID||h->opn1.kind==ARRAY_POINTER)
              sprintf(opnstr1,"%s",h->opn1.id);
         if (h->opn2.kind==INT)
              sprintf(opnstr2,"#%d",h->opn2.const_int);
         if (h->opn2.kind==FLOAT)
              sprintf(opnstr2,"#%f",h->opn2.const_float);
-        if (h->opn2.kind==ID)
+        if (h->opn2.kind==ID||h->opn2.kind==ARRAY_POINTER)
              sprintf(opnstr2,"%s",h->opn2.id);
         sprintf(resultstr,"%s",h->result.id);
         switch (h->op)
@@ -170,7 +170,15 @@ void prnIR(struct codenode *head)
             case NOT:
                             printf("  %s := ! %s\n", resultstr, opnstr1);
                             break;
-            
+            case UMINUS:
+                            printf("  %s := - %s\n", resultstr, opnstr1);
+                            break;
+            case DMINUS:
+                            printf("  %s--\n",resultstr);
+                            break;
+            case DPLUS:
+                            printf("  %s++\n",resultstr);
+                            break;
             case ARG:      printf("  ARG %s\n",h->result.id);
                            break;
             case CALL:     if (!strcmp(opnstr1,"write"))
@@ -193,7 +201,7 @@ void prnIR(struct codenode *head)
 
 void prn_symbol(){ //显示符号表
     int i=0;
-    printf("%6s %6s %6s %6s %4s %6s %6s\n","变量名","别 名","层 号","类  型","标记","偏移量", "other_info");
+    printf("%6s\t%6s\t%6s\t%6s\t%4s\t%6s\t%6s\n","变量名","别 名","层 号","类  型","标记","偏移量", "other_info");
     for(i=0;i<symbolTable.index;i++)
     {
         char type[16];
@@ -209,20 +217,23 @@ void prn_symbol(){ //显示符号表
             strcpy(type, "float");
             break;
         case INT+ARRAY_DEC:
-            strcpy(type, "int*");
+            strcpy(type, "int_arr");
             break;
         case FLOAT+ARRAY_DEC:
-            strcpy(type, "float*");
+            strcpy(type, "float_arr");
+            break;
+        case ARRAY_POINTER:
+            strcpy(type, "pointer");
             break;
         }
-        printf("%6s %6s %6d  %6s %4c %s",symbolTable.symbols[i].name,\
+        printf("%6s\t%6s\t%6d\t%6s\t%4c\t%s\t",symbolTable.symbols[i].name,\
         symbolTable.symbols[i].alias,symbolTable.symbols[i].level,\
         type,\
         symbolTable.symbols[i].flag,offset);
-        if(symbolTable.symbols[i].arraylen->size>0)
+        if(symbolTable.symbols[i].arraylen->size > 0)
         {
-            for(int j=0;i<symbolTable.symbols[i].arraylen->size;j++)
-                printf("%d ", symbolTable.symbols[i].arraylen->data[j]);
+            for(int j=0;j<symbolTable.symbols[i].arraylen->size;j++)
+                printf("%3d ", symbolTable.symbols[i].arraylen->data[j]);
         }
         printf("\n");
     }

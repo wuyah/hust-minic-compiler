@@ -1,6 +1,12 @@
-
 int main()
 {
-    char a;
+    int a;
+    int b;
+    a = 0;
+    b = a++;
+    write(a);
+    write(b);
+    b = ++a;
+    write(b);
     return 0;
 }

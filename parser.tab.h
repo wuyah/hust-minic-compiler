@@ -135,8 +135,12 @@ extern int yydebug;
     ARRAY_DEC = 336,               /* ARRAY_DEC  */
     ANNOTATION = 337,              /* ANNOTATION  */
     ARRAY_POINTER = 338,           /* ARRAY_POINTER  */
-    UMINUS = 339,                  /* UMINUS  */
-    LOWER_THEN_ELSE = 340          /* LOWER_THEN_ELSE  */
+    DMINUS_L = 339,                /* DMINUS_L  */
+    DMINUS_R = 340,                /* DMINUS_R  */
+    DPLUS_L = 341,                 /* DPLUS_L  */
+    DPLUS_R = 342,                 /* DPLUS_R  */
+    UMINUS = 343,                  /* UMINUS  */
+    LOWER_THEN_ELSE = 344          /* LOWER_THEN_ELSE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -152,7 +156,7 @@ union YYSTYPE
 	char   type_id[32];
 	struct ASTNode *ptr;
 
-#line 156 "parser.tab.h"
+#line 160 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -147,8 +147,10 @@ void display(struct ASTNode *T,int indent)
                     display(T->Exp2,indent+3);
                     break;
 	case NOT:
-    case DPLUS:
-    case DMINUS:
+    case DPLUS_L:
+    case DPLUS_R:
+    case DMINUS_R:
+    case DMINUS_L:
 	case UMINUS:    printf("%*c%s\n",indent,' ',T->type_id);
                     display(T->Exp1,indent+3);
                     break;

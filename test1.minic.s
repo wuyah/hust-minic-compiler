@@ -4,7 +4,7 @@ _ret: .asciiz "\n"
 .globl main0
 .text
 main0:
-  addi $sp,$sp,-666
+  addi $sp,$sp,-888
   jal main
   li $v0, 10
   syscall
@@ -40,10 +40,8 @@ main:
   sne $t2, $t2, $zero
   and $t3,$t1,$t2
   sw $t3, 36($sp)
-  li $t1, 36
-  addu $t1, $t1, $sp
-  lw $t3, ($t1)
-  sw $t3, 16($sp)
+  lw $t1, 36($sp)
+  sw $t1, 16($sp)
   lw $a0, 16($sp)
   addi $sp, $sp, -4
   sw $ra,0($sp)
@@ -56,42 +54,40 @@ main:
   sne $t2, $t2, $zero
   or $t3,$t1,$t2
   sw $t3, 36($sp)
-  li $t1, 36
-  addu $t1, $t1, $sp
-  lw $t3, ($t1)
-  sw $t3, 16($sp)
+  lw $t1, 36($sp)
+  sw $t1, 16($sp)
   lw $a0, 16($sp)
   addi $sp, $sp, -4
   sw $ra,0($sp)
   jal write
   lw $ra,0($sp)
   addi $sp, $sp, 4
-  li.s $f3, 0.000000
+  li.s $f3, 1.000000
   s.s $f3, 36($sp)
-  li $t1, 36
-  addu $t1, $t1, $sp
-  lw $t3, ($t1)
-  sw $t3, 12($sp)
+  lw $t1, 36($sp)
+  sw $t1, 12($sp)
   li $t3, 2
   sw $t3, 36($sp)
   lw $t1, 36($sp)
   sw $t1, 16($sp)
-  l.s $f1, 12($sp)
+  lw $t1, 12($sp)
+  lw $t2, 4($sp)
+  mtc1 $t1, $f1
+  mtc1 $t2, $f2
   li.s $f2, 0.0
   c.eq.s $f1, $f2
   cfc1 $t0, $31
   sne $t3, $t0, $zero
   sw $t3, 36($sp)
-  l.s $f1, 36($sp)
+  lw $t1, 36($sp)
+  lw $t2, 4($sp)
   li.s $f2, 0.0
   c.eq.s $f1, $f2
   cfc1 $t0, $31
   sne $t3, $t0, $zero
   sw $t3, 40($sp)
-  li $t1, 40
-  addu $t1, $t1, $sp
-  lw $t3, ($t1)
-  sw $t3, 16($sp)
+  lw $t1, 40($sp)
+  sw $t1, 16($sp)
   li $t3, 2
   sw $t3, 36($sp)
   li $t3, 3
@@ -127,10 +123,20 @@ main:
   lw $t2, 88($sp)
   add $t3,$t1,$t2
   sw $t3, 68($sp)
-  li $t1, 68
-  addu $t1, $t1, $sp
-  lw $t3, ($t1)
-  sw $t3, 16($sp)
+  lw $t1, 68($sp)
+  sw $t1, 16($sp)
+  lw $a0, 16($sp)
+  addi $sp, $sp, -4
+  sw $ra,0($sp)
+  jal write
+  lw $ra,0($sp)
+  addi $sp, $sp, 4
+  lw $t1, 16($sp)
+  lw $t2, 4($sp)
+  neg $t3, $t1
+  sw $t3, 36($sp)
+  lw $t1, 36($sp)
+  sw $t1, 16($sp)
   lw $a0, 16($sp)
   addi $sp, $sp, -4
   sw $ra,0($sp)

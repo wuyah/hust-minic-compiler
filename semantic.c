@@ -244,6 +244,10 @@ void semantic_Analysis(struct ASTNode *T)
                             else {
                                 T0->Dec->place=rtn;
                                 symbolTable.symbols[rtn].arraylen = v;
+                                if(symbolTable.symbols[rtn].arraylen->size>0)
+                                {
+                                    printf("v INIT SUCCESS!\n");
+                                }
                             }   
                             T->width = width;
                             printf("T->width width:%d\n", width);
@@ -347,20 +351,25 @@ void semantic_Analysis(struct ASTNode *T)
                 break;
     case FOR:
                 // T->Exp2 is the condition utter
-                semantic_Analysis(T->Exp1);
                 strcpy(T->Exp2->Etrue,newLabel());  //子结点继承属性的计算
                 strcpy(T->Exp2->Efalse,T->Snext);
-                T->Exp1->offset=T->Exp3->offset=T->Exp2->offset=T->Body->offset=T->offset;
+                T->Exp1->offset=T->offset;
+                semantic_Analysis(T->Exp1);
+                T->offset = T->offset + T->Exp1->width;
+                T->Exp2->offset = T->Exp1->offset;
                 boolExp(T->Exp2);
                 T->width = T->Exp2->width;
+                strcpy(T->Body->Snext,newLabel());
                 strcpy(T->Exp3->Snext,newLabel());
+                T->Body->offset = T->offset;
                 semantic_Analysis(T->Body);
+                T->Exp3->offset = T->Body->offset + T->Body->width;
                 semantic_Analysis(T->Exp3);
                 if (T->width < (T->Body->width + T->Exp3->width)) T->width=T->Body->width + T->Exp3->width;
                 
                 // Exp1 -> label -> condition(Exp2) -> Goto Next -> Body -> Exp3 ->Exp3 Next
-                T->code=merge(7,T->Exp1->code,genLabel(T->Exp3->Snext),T->Exp2->code, \
-                    genLabel(T->Exp2->Etrue), T->Body->code, T->Exp3->code, genGoto(T->Exp3->Snext));
+                T->code=merge(8,T->Exp1->code,genLabel(T->Exp3->Snext),T->Exp2->code, \
+                    genLabel(T->Exp2->Etrue), T->Body->code,genLabel(T->Body->Snext), T->Exp3->code, genGoto(T->Exp3->Snext));
                 break;
     case EXP_STMT:
                 T->Exp1->offset=T->offset;
@@ -398,8 +407,10 @@ void semantic_Analysis(struct ASTNode *T)
 	case DIV:
 	case NOT:
 	case UMINUS:
-    case DPLUS:
-    case DMINUS:
+    case DPLUS_L:
+    case DPLUS_R:
+    case DMINUS_L:
+    case DMINUS_R:
     case FUNC_CALL:
                     Exp(T);          //处理基本表达式
                     break;
