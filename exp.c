@@ -269,6 +269,7 @@ void Exp(struct ASTNode *T)
                     result.kind = ARRAY_POINTER;
                 else
                     result.kind = ID;
+                result.type = symbolTable.symbols[T0->Exp1->place].type;
                 strcpy(result.id, symbolTable.symbols[T0->Exp1->place].alias);
                 result.offset = symbolTable.symbols[T0->Exp1->place].offset;
                 T->code = merge(2, T->code, genIR(ARG, opn1, opn2, result));

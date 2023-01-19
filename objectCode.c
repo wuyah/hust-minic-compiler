@@ -4,7 +4,10 @@ char filename[33];
 
 void bool_gen(codenode* h, FILE* fp);
 void load_data(codenode* h, FILE* fp);
-void gen_write_func(codenode* h, FILE* fp);
+void call_write_func(codenode* h, FILE* fp);
+void gen_read_func(FILE*fp);
+void gen_write_func(FILE* fp);
+void gen_writef_func(FILE* fp);
 
 // 输出目标代码
 void objectCode(struct codenode *head)
@@ -33,22 +36,12 @@ void objectCode(struct codenode *head)
     fprintf(fp, "  li $v0, 10\n");
     fprintf(fp, "  syscall\n");
     // read function
-    fprintf(fp, "read:\n");
-    fprintf(fp, "  li $v0,4\n");
-    fprintf(fp, "  la $a0,_Prompt\n");
-    fprintf(fp, "  syscall\n");
-    fprintf(fp, "  li $v0,5\n");
-    fprintf(fp, "  syscall\n");
-    fprintf(fp, "  jr $ra\n");
+    gen_read_func(fp);
+
     // write fuction
-    fprintf(fp, "write:\n");
-    fprintf(fp, "  li $v0,1\n");
-    fprintf(fp, "  syscall\n");
-    fprintf(fp, "  li $v0,4\n");
-    fprintf(fp, "  la $a0,_ret\n");
-    fprintf(fp, "  syscall\n");
-    fprintf(fp, "  move $v0,$0\n");
-    fprintf(fp, "  jr $ra\n");
+    gen_write_func(fp);
+    // write float function
+    gen_writef_func(fp);
     do
     { // 采用朴素寄存器分配
     
@@ -61,9 +54,10 @@ void objectCode(struct codenode *head)
             fprintf(fp, "  sw $t2, %d($sp)\n", h->result.offset);
             break;
         case ASSIGNOP:
+        // TODo
             if(h->result.kind == ARRAY_POINTER)                 // write a pointer
             {
-                // store the value of the pointer
+                // store the value to the pointer
                 fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
                 fprintf(fp, "  lw $t2, %d($sp)\n", h->result.offset);
                 fprintf(fp, "  add $t2, $t2, $sp\n");
@@ -280,7 +274,7 @@ void objectCode(struct codenode *head)
             }
             if (!strcmp(h->opn1.id, "write"))
             { // 特殊处理write
-                gen_write_func(h, fp);
+                call_write_func(h, fp);
                 break;
             }
 
@@ -389,18 +383,18 @@ void load_data(codenode* h, FILE* fp)    // read from pointer, if another is not
     {            
         fprintf(fp, "  mtc1 $t1, $f1\n");
         fprintf(fp, "  mtc1 $t2, $f2\n");
-        if (h->opn1.type == FLOAT)
+        if (h->opn1.type == INT)
         {
             fprintf(fp, "  cvt.s.w $f1, $f1\n");
         }
-        if (h->opn2.type == FLOAT)
+        if (h->opn2.type == INT)
         {
             fprintf(fp, "  cvt.s.w $f2, $f2\n");
         }
     }
 }
 
-void gen_write_func(codenode* h, FILE* fp)
+void call_write_func(codenode* h, FILE* fp)
 {
     if(h->prior->result.kind == ARRAY_POINTER)
     {
@@ -411,9 +405,53 @@ void gen_write_func(codenode* h, FILE* fp)
     {
         fprintf(fp, "  lw $a0, %d($sp)\n", h->prior->result.offset);
     }
-    fprintf(fp, "  addi $sp, $sp, -4\n");
-    fprintf(fp, "  sw $ra,0($sp)\n");
-    fprintf(fp, "  jal write\n");
-    fprintf(fp, "  lw $ra,0($sp)\n");
-    fprintf(fp, "  addi $sp, $sp, 4\n");
+    if(h->prior->result.type == FLOAT)
+    {   
+        fprintf(fp, "  mtc1 $a0, $f12\n");
+        fprintf(fp, "  addi $sp, $sp, -4\n");
+        fprintf(fp, "  sw $ra,0($sp)\n");
+        fprintf(fp, "  jal writef\n");
+        fprintf(fp, "  lw $ra,0($sp)\n");
+        fprintf(fp, "  addi $sp, $sp, 4\n");
+    }else{
+        fprintf(fp, "  addi $sp, $sp, -4\n");
+        fprintf(fp, "  sw $ra,0($sp)\n");
+        fprintf(fp, "  jal write\n");
+        fprintf(fp, "  lw $ra,0($sp)\n");
+        fprintf(fp, "  addi $sp, $sp, 4\n");
+    }
+}
+void gen_read_func(FILE*fp)
+{
+    fprintf(fp, "read:\n");
+    fprintf(fp, "  li $v0,4\n");
+    fprintf(fp, "  la $a0,_Prompt\n");
+    fprintf(fp, "  syscall\n");
+    fprintf(fp, "  li $v0,5\n");
+    fprintf(fp, "  syscall\n");
+    fprintf(fp, "  jr $ra\n");
+}
+
+void gen_write_func(FILE* fp)
+{
+    fprintf(fp, "write:\n");
+    fprintf(fp, "  li $v0,1\n");
+    fprintf(fp, "  syscall\n");
+    fprintf(fp, "  li $v0,4\n");
+    fprintf(fp, "  la $a0,_ret\n");
+    fprintf(fp, "  syscall\n");
+    fprintf(fp, "  move $v0,$0\n");
+    fprintf(fp, "  jr $ra\n");
+}
+
+void gen_writef_func(FILE* fp)
+{
+    fprintf(fp, "writef:\n");
+    fprintf(fp, "  li $v0,2\n");
+    fprintf(fp, "  syscall\n");
+    fprintf(fp, "  li $v0,4\n");
+    fprintf(fp, "  la $a0,_ret\n");
+    fprintf(fp, "  syscall\n");
+    fprintf(fp, "  move $v0,$0\n");
+    fprintf(fp, "  jr $ra\n");
 }

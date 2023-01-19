@@ -555,7 +555,7 @@ typedef union {
 	int type_int;
 	int type_float;
 	char type_id[32];
-	char type_char;
+	char type_char[32];
 	// struct ASTNode *ptr;
 } YYLVAL;
 #define YYSTYPE YYLVAL
@@ -563,7 +563,8 @@ int lastToken;
 
 #line 565 "lex.yy.c"
 
-#line 567 "lex.yy.c"
+/* charconst	\'([A-Za-z][A-Za-z0-9]|\\['"?\\ntabrvf])+\' */
+#line 568 "lex.yy.c"
 
 #define INITIAL 0
 #define comment 1
@@ -782,9 +783,9 @@ YY_DECL
 		}
 
 	{
-#line 37 "lex.l"
+#line 38 "lex.l"
 
-#line 788 "lex.yy.c"
+#line 789 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -853,47 +854,47 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 38 "lex.l"
+#line 39 "lex.l"
 {strcpy(yylval.type_id,  yytext);return TYPE;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 39 "lex.l"
+#line 40 "lex.l"
 {strcpy(yylval.type_id,  yytext);return TYPE;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 40 "lex.l"
+#line 41 "lex.l"
 {strcpy(yylval.type_id,  yytext);return TYPE;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 42 "lex.l"
+#line 43 "lex.l"
 {return CONTINUE;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 43 "lex.l"
+#line 44 "lex.l"
 {return BREAK;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 44 "lex.l"
+#line 45 "lex.l"
 {return RETURN;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 45 "lex.l"
+#line 46 "lex.l"
 {return IF;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 46 "lex.l"
+#line 47 "lex.l"
 {return ELSE;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 47 "lex.l"
+#line 48 "lex.l"
 {return WHILE;}
 	YY_BREAK
 case 10:
@@ -919,7 +920,7 @@ YY_RULE_SETUP
 case 14:
 YY_RULE_SETUP
 #line 54 "lex.l"
-{strcpy(yylval.type_id, yytext);;return RELOP;}
+{strcpy(yylval.type_id, yytext);return RELOP;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
@@ -1013,82 +1014,82 @@ YY_RULE_SETUP
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 76 "lex.l"
+#line 77 "lex.l"
 {}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 77 "lex.l"
+#line 78 "lex.l"
 {BEGIN(comment);}
 	YY_BREAK
 case 35:
 /* rule 35 can match eol */
 YY_RULE_SETUP
-#line 78 "lex.l"
+#line 79 "lex.l"
 {}
 	YY_BREAK
 case 36:
 /* rule 36 can match eol */
 YY_RULE_SETUP
-#line 79 "lex.l"
+#line 80 "lex.l"
 {}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 80 "lex.l"
+#line 81 "lex.l"
 {BEGIN(INITIAL);}
 	YY_BREAK
 case YY_STATE_EOF(comment):
-#line 81 "lex.l"
+#line 82 "lex.l"
 {printf("%sat line%d: Block Comment miss final synax\n",yytext,yylineno);return 0;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 83 "lex.l"
+#line 84 "lex.l"
 {BEGIN(string);}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 84 "lex.l"
+#line 85 "lex.l"
 {}
 	YY_BREAK
 case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
-#line 85 "lex.l"
+#line 86 "lex.l"
 {printf("%sat line%d: String inline enter\n",yytext,yylineno);return 0;}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 86 "lex.l"
+#line 87 "lex.l"
 {BEGIN(INITIAL);}
 	YY_BREAK
 case YY_STATE_EOF(string):
-#line 87 "lex.l"
+#line 88 "lex.l"
 {printf("%sat line%d: String miss final synax\n",yytext,yylineno);return 0;}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 89 "lex.l"
+#line 90 "lex.l"
 {}   
 	YY_BREAK
 case 43:
 /* rule 43 can match eol */
 YY_RULE_SETUP
-#line 91 "lex.l"
+#line 92 "lex.l"
 {yycolumn=1;}   
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 92 "lex.l"
+#line 93 "lex.l"
 {printf("Error type A :Mysterious character \"%s\"\n\t at Line %d\n",yytext,yylineno);}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 94 "lex.l"
+#line 95 "lex.l"
 ECHO;
 	YY_BREAK
-#line 1092 "lex.yy.c"
+#line 1093 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2105,7 +2106,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 94 "lex.l"
+#line 95 "lex.l"
 
 
 /* 和bison联用时，不需要这部分

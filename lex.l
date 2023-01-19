@@ -16,7 +16,7 @@ typedef union {
 	int type_int;
 	int type_float;
 	char type_id[32];
-	char type_char;
+	char type_char[32];
 	// struct ASTNode *ptr;
 } YYLVAL;
 #define YYSTYPE YYLVAL
@@ -34,6 +34,7 @@ stringBlock				"\""
 id   [A-Za-z][A-Za-z0-9]*  
 intconst    [0-9]+
 floatconst  [0-9]*\.?[0-9]?([eE][-+]?[0-9]+)?
+/* charconst	\'([A-Za-z][A-Za-z0-9]|\\['"?\\ntabrvf])+\' */
 %%
 "int"       {strcpy(yylval.type_id,  yytext);return TYPE;}
 "float"     {strcpy(yylval.type_id,  yytext);return TYPE;}
@@ -45,13 +46,12 @@ floatconst  [0-9]*\.?[0-9]?([eE][-+]?[0-9]+)?
 "if"        {return IF;}
 "else"      {return ELSE;}
 "while"     {return WHILE;}
-
 "for"       {return FOR;}
 
 {id}        				{strcpy(yylval.type_id,  yytext); return ID;}
 ";"		  					{return SEMI;}
 ","		  					{return COMMA;}
-">"|"<"|">="|"<="|"=="|"!=" {strcpy(yylval.type_id, yytext);;return RELOP;}
+">"|"<"|">="|"<="|"=="|"!=" {strcpy(yylval.type_id, yytext);return RELOP;}
 "="							{return ASSIGNOP;}
 "++"						{return DPLUS;}
 "+"							{return PLUS;}
@@ -73,7 +73,8 @@ floatconst  [0-9]*\.?[0-9]?([eE][-+]?[0-9]+)?
 {intconst}          {yylval.type_int=atoi(yytext);  return INT;}
 {floatconst}        {yylval.type_float=atof(yytext);return FLOAT;}
 
-{singleLineComment}	{}
+
+{singleLineComment}				{}
 {blockCommentStart}				{BEGIN(comment);}
 <comment>[^\*]					{}
 <comment>"\*"+[^/]				{}

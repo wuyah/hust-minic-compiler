@@ -17,6 +17,7 @@
 	int    type_int;
 	float  type_float;
 	char   type_id[32];
+        char   type_char[32];
 	struct ASTNode *ptr;
 };
 
@@ -25,9 +26,10 @@
 
 //% token 定义终结符的语义值类型
 %token <type_int> INT              /*指定INT的语义值是type_int，有词法分析得到的数值*/
-%token <type_id> ID  RELOP TYPE    /*指定ID,RELOP 的语义值是type_id，有词法分析得到的标识符字符串*/
+%token <type_id> ID  RELOP TYPE CHAR   /*指定ID,RELOP 的语义值是type_id，有词法分析得到的标识符字符串*/
 %token <type_float> FLOAT          /*指定ID的语义值是type_id，有词法分析得到的标识符字符串*/
-    
+
+
 %token DPLUS DMINUS GE GT LE LP LT NE RP LB RB LC RC LA RA SEMI COMMA     /*用bison对该文件编译时，带参数-d，生成的exp.tab.h中给这些单词进行编码，可在lex.l中包含parser.tab.h使用这些单词种类码*/
 %token PLUS MINUS STAR DIV ASSIGNOP AND OR NOT IF ELSE WHILE RETURN STRUCT FOR SWITCH CASE COLON DEFAULT 
 /* token for cotinue break */
@@ -197,7 +199,9 @@ Exp:
         | INT           {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=INT;
                                 $$->pos=yylineno;  $$->type=INT;$$->type_int=$1;}    //整型常量
         | FLOAT         {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=FLOAT;
-                                $$->pos=yylineno; $$->type=FLOAT; $$->type_float=$1=$1;}    //浮点常量
+                                $$->pos=yylineno; $$->type=FLOAT; $$->type_float=$1;}    //浮点常量
+        | CHAR          {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=CHAR;
+                                $$->pos=yylineno; $$->type=FLOAT; strcpy($$->type_char, $1);} 
         ;
 Args:    Exp COMMA Args    {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=ARGS;
                                                $$->pos=yylineno;  $$->Exp1=$1;$$->Args=$3;} 

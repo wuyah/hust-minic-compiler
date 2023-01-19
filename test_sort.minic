@@ -3,22 +3,18 @@ int main()
     int a[6];
     int i,j,temp;
     int arrtemp;
-    int c1,c2;
+    int c1;
     for(i=0;i<6;i++)
     {
-        arrtemp = read();
-        a[i]=arrtemp;
+        a[i]=read();
     }
     for(i=1;i<5;i++){
         for(j=0;j<6-i;j++)
         {
-            // c1 = a[j];
-            // c2 = a[j+1];
             if (a[j] > a[j+1])
             {
                 temp=a[j];
-                c1 = a[j+1];
-                a[j]=c1;
+                a[j]= a[j+1];
                 a[j+1]=temp;
             }
         }

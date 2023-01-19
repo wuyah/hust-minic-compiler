@@ -42,6 +42,7 @@ typedef struct ASTNode {
 		  int type_int;            //由整常数生成的叶结点
 		  float type_float;        //由浮点常数生成的叶结点
           int arr_length;          //array length
+          char type_char[8];          // char
 	      };
     union {//第1指针域
         struct ASTNode *Specifier; //说明语句的类型

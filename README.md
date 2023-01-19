@@ -41,6 +41,7 @@ current finished:
 - oneline comment finished using lex.l
 - read()/write() function can be called immediately
 - int array finished
+- break / continue finished
 
 TODO:
 - DPLUS DMINUS calculate(they should only work for INT)

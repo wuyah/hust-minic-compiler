@@ -23,75 +23,34 @@ write:
   syscall
   move $v0,$0
   jr $ra
+writef:
+  li $v0,2
+  syscall
+  li $v0,4
+  la $a0,_ret
+  syscall
+  move $v0,$0
+  jr $ra
 
 main:
-  addi $sp, $sp, -60
+  addi $sp, $sp, -32
   li $t3, 1
   sw $t3, 16($sp)
   lw $t1, 16($sp)
   sw $t1, 12($sp)
-  li $t3, 1
-  sw $t3, 24($sp)
+  li.s $f3, 1.200000
+  s.s $f3, 24($sp)
   lw $t1, 24($sp)
   sw $t1, 20($sp)
-  li $t3, 0
-  sw $t3, 36($sp)
-  li $t3, 0
-  sw $t3, 40($sp)
-  li $t3, 4
-  sw $t3, 44($sp)
-  lw $t1, 44($sp)
-  lw $t2, 40($sp)
-  mul $t3,$t1,$t2
-  sw $t3, 48($sp)
-  lw $t1, 48($sp)
-  lw $t2, 36($sp)
-  add $t3,$t1,$t2
-  sw $t3, 36($sp)
-  li $t1, 28
-  lw $t2, 36($sp)
-  add $t2, $t2, $t1
-  sw $t2, 52($sp)
-  li $t3, 1
-  sw $t3, 56($sp)
-  lw $t1, 56($sp)
-  lw $t2, 52($sp)
-  add $t2, $t2, $sp
-  sw $t1, ($t2)
-  li $t3, 0
-  sw $t3, 36($sp)
-  li $t3, 0
-  sw $t3, 40($sp)
-  li $t3, 4
-  sw $t3, 44($sp)
-  lw $t1, 44($sp)
-  lw $t2, 40($sp)
-  mul $t3,$t1,$t2
-  sw $t3, 48($sp)
-  lw $t1, 48($sp)
-  lw $t2, 36($sp)
-  add $t3,$t1,$t2
-  sw $t3, 36($sp)
-  li $t1, 28
-  lw $t2, 36($sp)
-  add $t2, $t2, $t1
-  sw $t2, 52($sp)
-  lw $t1, 12($sp)
-  lw $t2, 52($sp)
-  sne $t1, $t1, $zero
-  sne $t2, $t2, $zero
-  or $t3,$t1,$t2
-  sw $t3, 56($sp)
-  lw $t1, 56($sp)
-  sw $t1, 12($sp)
-  lw $a0, 12($sp)
+  lw $a0, 20($sp)
+  mtc1 $a0, $f12
   addi $sp, $sp, -4
   sw $ra,0($sp)
-  jal write
+  jal writef
   lw $ra,0($sp)
   addi $sp, $sp, 4
   li $t3, 0
-  sw $t3, 36($sp)
-  lw $v0,36($sp)
+  sw $t3, 28($sp)
+  lw $v0,28($sp)
   jr $ra
 label1:
