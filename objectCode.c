@@ -4,10 +4,13 @@ char filename[33];
 
 void bool_gen(codenode* h, FILE* fp);
 void load_data(codenode* h, FILE* fp);
+void save_data(codenode* h, FILE* fp);
 void call_write_func(codenode* h, FILE* fp);
 void gen_read_func(FILE*fp);
 void gen_write_func(FILE* fp);
 void gen_writef_func(FILE* fp);
+void assign_exp(codenode* h, FILE*fp);
+void assign_exp_update(codenode* h, FILE*fp);
 
 // 输出目标代码
 void objectCode(struct codenode *head)
@@ -26,10 +29,10 @@ void objectCode(struct codenode *head)
     fprintf(fp, ".data\n");
     fprintf(fp, "_Prompt: .asciiz \"Enter an integer:  \"\n");
     fprintf(fp, "_ret: .asciiz \"\\n\"\n");
-    fprintf(fp, ".globl main0\n");
+    fprintf(fp, ".globl main\n");
     fprintf(fp, ".text\n");
     fprintf(fp, "main0:\n");
-    fprintf(fp, "  addi $sp,$sp,%d\n", -888); // 释放活动记录空间
+    fprintf(fp, "  addi $sp,$sp,%d\n", 0); // 释放活动记录空间
 
     fprintf(fp, "  jal main\n");
     // use to finish the main fuction
@@ -47,7 +50,7 @@ void objectCode(struct codenode *head)
     
         switch (h->op)
         {
-        case ARRAY_POINTER:
+        case ARRAY_POINTER_ASSIGN:
             fprintf(fp, "  li $t1, %d\n", h->opn1.offset);
             fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
             fprintf(fp, "  add $t2, $t2, $t1\n");
@@ -55,34 +58,7 @@ void objectCode(struct codenode *head)
             break;
         case ASSIGNOP:
         // TODo
-            if(h->result.kind == ARRAY_POINTER)                 // write a pointer
-            {
-                // store the value to the pointer
-                fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
-                fprintf(fp, "  lw $t2, %d($sp)\n", h->result.offset);
-                fprintf(fp, "  add $t2, $t2, $sp\n");
-                fprintf(fp, "  sw $t1, ($t2)\n");
-            } else if(h->opn1.kind == ARRAY_POINTER)            // pointer for read
-            {
-                fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
-                fprintf(fp, "  addu $t1, $t1, $sp\n");
-                fprintf(fp, "  lw $t3, ($t1)\n");
-                fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset); 
-            }else if (h->opn1.kind == INT)
-            {
-                fprintf(fp, "  li $t3, %d\n", h->opn1.const_int);
-                fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
-            }
-            else if (h->opn1.kind == FLOAT)
-            {
-                fprintf(fp, "  li.s $f3, %f\n", h->opn1.const_float);
-                fprintf(fp, "  s.s $f3, %d($sp)\n", h->result.offset);
-            }
-            else
-            {
-                fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
-                fprintf(fp, "  sw $t1, %d($sp)\n", h->result.offset);
-            }
+            assign_exp_update(h, fp);
             break;
         case PLUS:
         case MINUS:
@@ -102,7 +78,7 @@ void objectCode(struct codenode *head)
                     fprintf(fp, "  div $t1, $t2\n");
                     fprintf(fp, "  mflo $t3\n");
                 }
-                fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
+                // fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
             }
             else
             {
@@ -115,12 +91,14 @@ void objectCode(struct codenode *head)
                     fprintf(fp, "  mul.s $f3,$f1,$f2\n");
                 else
                     fprintf(fp, "  div.s $f3, $f1, $f2\n");
-                fprintf(fp, "  s.s $f3, %d($sp)\n", h->result.offset);
+                // fprintf(fp, "  s.s $f3, %d($sp)\n", h->result.offset);
             }
+            save_data(h, fp);
             break;
         // TODO
         case AND:
         case OR:
+        // only support int
             fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
             fprintf(fp, "  lw $t2, %d($sp)\n", h->opn2.offset);
             // if t1 != 0 t1 = 1 else t1 =0
@@ -213,7 +191,12 @@ void objectCode(struct codenode *head)
                 fprintf(fp, "  seq $t3, $t1, $t2\n");
             else
                 fprintf(fp, "  sne $t3, $t1, $t2\n");
-            fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
+            if(h->result.type == FLOAT)
+            {
+                fprintf(fp, "  mtc1 $t3, $f3\n");
+                fprintf(fp, "  cvt.s.w $f3, $f3\n");
+            }
+            save_data(h, fp);
 
             break;
         case NOT:
@@ -226,7 +209,6 @@ void objectCode(struct codenode *head)
             }
             else
             {
-                // fprintf(fp, "  l.s $f1, %d($sp)\n", h->opn1.offset);
                 fprintf(fp, "  li.s $f2, 0.0\n");
                 fprintf(fp, "  c.eq.s $f1, $f2\n");
                 // if f1 == 0, t0 != 0 t3 = 1 else t3 = 0
@@ -234,29 +216,48 @@ void objectCode(struct codenode *head)
                 fprintf(fp, "  sne $t3, $t0, $zero\n");
                 // if opn1 == 0, it is true, then res should be 1
             }
-            fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
+            if(h->result.type == FLOAT)
+            {
+                fprintf(fp, "  mtc1 $t3, $f3\n");
+                fprintf(fp, "  cvt.s.w $f3, $f3\n");
+            }
+            save_data(h, fp);
             break;
         case UMINUS:
             load_data(h, fp);
             if (h->opn1.type == INT)
             {
                 fprintf(fp, "  neg $t3, $t1\n");
-                fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
+                // fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
             } else
             {
                 fprintf(fp, "  neg.s $f3, $f1\n");
-                fprintf(fp, "  s.s $f3, %d($sp)\n", h->result.offset);
+                // fprintf(fp, "  s.s $f3, %d($sp)\n", h->result.offset);
             }
+            save_data(h, fp);
             break;
         case DMINUS:
         case DPLUS:
+            if(h->opn1.kind == ARRAY_POINTER)
+            {
+                fprintf(fp, "  lw $t4, %d($sp)\n", h->opn1.offset);
+                fprintf(fp, "  addu $t4, $t4, $sp\n");
+                fprintf(fp, "  lw $t1, ($t4)\n");
+            } else
+                fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
             // must be int
-            fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
             if(h->op == DPLUS)
                 fprintf(fp, "  addi $t1, $t1, 1\n");
             else
                 fprintf(fp, "  addi $t1, $t1, -1\n");
-            fprintf(fp, "  sw $t1, %d($sp)\n", h->result.offset);
+            if(h->result.kind == ARRAY_POINTER)                 // write a pointer
+            {
+        // store the value to the pointer
+                fprintf(fp, "  lw $t2, %d($sp)\n", h->result.offset);
+                fprintf(fp, "  add $t2, $t2, $sp\n");
+                fprintf(fp, "  sw $t1, ($t2)\n");
+            } else
+                fprintf(fp, "  sw $t1, %d($sp)\n", h->result.offset);
             break;
         case ARG: // 直接跳到后面一条,直到函数调用，回头反查参数。
             break;
@@ -421,6 +422,7 @@ void call_write_func(codenode* h, FILE* fp)
         fprintf(fp, "  addi $sp, $sp, 4\n");
     }
 }
+
 void gen_read_func(FILE*fp)
 {
     fprintf(fp, "read:\n");
@@ -454,4 +456,62 @@ void gen_writef_func(FILE* fp)
     fprintf(fp, "  syscall\n");
     fprintf(fp, "  move $v0,$0\n");
     fprintf(fp, "  jr $ra\n");
+}
+
+void assign_exp_update(codenode* h, FILE*fp)
+{
+    if(h->opn1.kind == ARRAY_POINTER)            // pointer for read
+    {
+        fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
+        fprintf(fp, "  addu $t1, $t1, $sp\n");
+        fprintf(fp, "  lw $t3, ($t1)\n");
+        // fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset); 
+    }else if (h->opn1.kind == INT)
+    {
+        fprintf(fp, "  li $t3, %d\n", h->opn1.const_int);
+        // fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
+    }
+    else if (h->opn1.kind == FLOAT)
+    {
+        fprintf(fp, "  li.s $f3, %f\n", h->opn1.const_float);
+    }
+    else
+    {
+        fprintf(fp, "  lw $t3, %d($sp)\n", h->opn1.offset);
+    }
+    
+    if(h->result.kind == ARRAY_POINTER)                 // write a pointer
+    {
+        // store the value to the pointer
+        fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
+        fprintf(fp, "  lw $t2, %d($sp)\n", h->result.offset);
+        fprintf(fp, "  add $t2, $t2, $sp\n");
+        fprintf(fp, "  sw $t3, ($t2)\n");
+    } else
+    {
+        if(h->opn1.type == FLOAT)
+            fprintf(fp, "  s.s $f3, %d($sp)\n", h->result.offset);
+        else
+            fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
+    }
+
+}
+
+void save_data(codenode* h, FILE* fp)
+{
+    // all save to $t3 or f3
+    if(h->result.kind == ARRAY_POINTER)                 // write a pointer
+    {
+        // store the value to the pointer
+        fprintf(fp, "  lw $t1, %d($sp)\n", h->opn1.offset);
+        fprintf(fp, "  lw $t2, %d($sp)\n", h->result.offset);
+        fprintf(fp, "  add $t2, $t2, $sp\n");
+        fprintf(fp, "  sw $t3, ($t2)\n");
+    } else
+    {
+        if(h->result.type==FLOAT)
+            fprintf(fp, "  s.s $f3, %d($sp)\n", h->result.offset);
+        else
+            fprintf(fp, "  sw $t3, %d($sp)\n", h->result.offset);
+    }
 }

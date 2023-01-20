@@ -16,14 +16,11 @@ void vector_destory(vector* v)
 
 void vector_push_back(vector* v, int value)
 {
-    // 如果向量已满，则扩大容量
     if (v->size == v->capacity)
     {
         v->capacity *= 2;
         v->data = (int *)realloc(v->data, v->capacity * sizeof(int));
     }
-
-    // 在末尾添加新元素
     v->data[v->size++] = value;
 }
 
