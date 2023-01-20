@@ -134,8 +134,8 @@ extern int yydebug;
     EXP_NEQ = 335,                 /* EXP_NEQ  */
     ARRAY_CALL = 336,              /* ARRAY_CALL  */
     ARRAY_DEC = 337,               /* ARRAY_DEC  */
-    ANNOTATION = 338,              /* ANNOTATION  */
-    ARRAY_POINTER = 339,           /* ARRAY_POINTER  */
+    ARRAY_POINTER = 338,           /* ARRAY_POINTER  */
+    ARRAY_POINTER_ASSIGN = 339,    /* ARRAY_POINTER_ASSIGN  */
     DMINUS_L = 340,                /* DMINUS_L  */
     DMINUS_R = 341,                /* DMINUS_R  */
     DPLUS_L = 342,                 /* DPLUS_L  */

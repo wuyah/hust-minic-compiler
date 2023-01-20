@@ -8,19 +8,31 @@ da//*   [][][]cs***
 int main()
 {
     float a;
-    int b;
+    int b[3];
     int c = 1;
     int d = 0;
-    b = c && d;
-    write(b);
-    b = c || d;
-    write(b);
-    a = 1.0;
+    a = 1.2;
+    write(a);
+    a = 1.2+1.1;
+    write(a);
+    b[0] = c && d;
+    // 0
+    write(b[0]);
+    b[1] = c || d;
+    // 1
+    write(b[1]);
+    a = 0;
     b=2;
-    b = !!a;
-    b = 2+3+4*5/2;
-    write(b);
-    b = -b;
-    write(b);
+    b[2] = !a;
+    // 1
+    write(b[2]);
+    
+    b[1] = 2+3+4*5/2;
+    b[1] = 15;
+    // 15
+    write(b[1]);
+    b[1] = -b[1];
+    write(b[1]);
+    // -15
     return 0;
 }

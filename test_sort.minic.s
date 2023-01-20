@@ -1,10 +1,10 @@
 .data
 _Prompt: .asciiz "Enter an integer:  "
 _ret: .asciiz "\n"
-.globl main0
+.globl main
 .text
 main0:
-  addi $sp,$sp,-888
+  addi $sp,$sp,0
   jal main
   li $v0, 10
   syscall
@@ -36,8 +36,8 @@ main:
   addi $sp, $sp, -104
   li $t3, 0
   sw $t3, 56($sp)
-  lw $t1, 56($sp)
-  sw $t1, 36($sp)
+  lw $t3, 56($sp)
+  sw $t3, 36($sp)
 label5:
   li $t3, 6
   sw $t3, 56($sp)
@@ -68,13 +68,14 @@ label3:
   lw $ra,0($sp)
   addi $sp, $sp, 4
   sw $v0, 76($sp)
+  lw $t3, 76($sp)
   lw $t1, 76($sp)
   lw $t2, 72($sp)
   add $t2, $t2, $sp
-  sw $t1, ($t2)
+  sw $t3, ($t2)
 label4:
-  lw $t1, 36($sp)
-  sw $t1, 80($sp)
+  lw $t3, 36($sp)
+  sw $t3, 80($sp)
   lw $t1, 36($sp)
   addi $t1, $t1, 1
   sw $t1, 36($sp)
@@ -82,8 +83,8 @@ label4:
 label2:
   li $t3, 1
   sw $t3, 56($sp)
-  lw $t1, 56($sp)
-  sw $t1, 36($sp)
+  lw $t3, 56($sp)
+  sw $t3, 36($sp)
 label9:
   li $t3, 5
   sw $t3, 56($sp)
@@ -94,8 +95,8 @@ label9:
 label7:
   li $t3, 0
   sw $t3, 60($sp)
-  lw $t1, 60($sp)
-  sw $t1, 40($sp)
+  lw $t3, 60($sp)
+  sw $t3, 40($sp)
 label12:
   li $t3, 6
   sw $t3, 60($sp)
@@ -127,9 +128,9 @@ label10:
   li $t3, 0
   sw $t3, 80($sp)
   li $t3, 1
-  sw $t3, 124($sp)
+  sw $t3, 84($sp)
   lw $t1, 40($sp)
-  lw $t2, 124($sp)
+  lw $t2, 84($sp)
   add $t3,$t1,$t2
   sw $t3, 88($sp)
   li $t3, 4
@@ -194,9 +195,9 @@ label13:
   li $t3, 0
   sw $t3, 80($sp)
   li $t3, 1
-  sw $t3, 124($sp)
+  sw $t3, 84($sp)
   lw $t1, 40($sp)
-  lw $t2, 124($sp)
+  lw $t2, 84($sp)
   add $t3,$t1,$t2
   sw $t3, 88($sp)
   li $t3, 4
@@ -214,15 +215,18 @@ label13:
   add $t2, $t2, $t1
   sw $t2, 100($sp)
   lw $t1, 100($sp)
+  addu $t1, $t1, $sp
+  lw $t3, ($t1)
+  lw $t1, 100($sp)
   lw $t2, 76($sp)
   add $t2, $t2, $sp
-  sw $t1, ($t2)
+  sw $t3, ($t2)
   li $t3, 0
   sw $t3, 64($sp)
   li $t3, 1
-  sw $t3, 108($sp)
+  sw $t3, 68($sp)
   lw $t1, 40($sp)
-  lw $t2, 108($sp)
+  lw $t2, 68($sp)
   add $t3,$t1,$t2
   sw $t3, 72($sp)
   li $t3, 4
@@ -239,20 +243,21 @@ label13:
   lw $t2, 64($sp)
   add $t2, $t2, $t1
   sw $t2, 84($sp)
+  lw $t3, 44($sp)
   lw $t1, 44($sp)
   lw $t2, 84($sp)
   add $t2, $t2, $sp
-  sw $t1, ($t2)
+  sw $t3, ($t2)
 label11:
-  lw $t1, 40($sp)
-  sw $t1, 104($sp)
+  lw $t3, 40($sp)
+  sw $t3, 104($sp)
   lw $t1, 40($sp)
   addi $t1, $t1, 1
   sw $t1, 40($sp)
   j label12
 label8:
-  lw $t1, 36($sp)
-  sw $t1, 104($sp)
+  lw $t3, 36($sp)
+  sw $t3, 104($sp)
   lw $t1, 36($sp)
   addi $t1, $t1, 1
   sw $t1, 36($sp)
@@ -260,8 +265,8 @@ label8:
 label6:
   li $t3, 0
   sw $t3, 56($sp)
-  lw $t1, 56($sp)
-  sw $t1, 36($sp)
+  lw $t3, 56($sp)
+  sw $t3, 36($sp)
 label19:
   li $t3, 6
   sw $t3, 56($sp)
@@ -295,8 +300,8 @@ label17:
   lw $ra,0($sp)
   addi $sp, $sp, 4
 label18:
-  lw $t1, 36($sp)
-  sw $t1, 80($sp)
+  lw $t3, 36($sp)
+  sw $t3, 80($sp)
   lw $t1, 36($sp)
   addi $t1, $t1, 1
   sw $t1, 36($sp)

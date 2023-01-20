@@ -1,3 +1,7 @@
+// test for 3d array
+/*
+a test of block comment *\/dsadw\n
+*/
 int main()
 {
     int i, j;

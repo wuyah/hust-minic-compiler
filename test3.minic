@@ -4,13 +4,28 @@ float func(float a, float b)
     return a+b;
 }
 
+// test float func
 int main()
 {
     float a=1.1, b=2.1;
     float c;
+    float e[3];
+    int d;
+    e[0] = a;
+    e[1] = b;
+    c = e[0]-e[1]-1;
+    write(c);
     c =  a+b;
     write(c);
     c = func(a,b);
+    write(c);
+    d = a<b;
+    write(d);
+    d = a>b;
+    write(d);
+    c = a*b;
+    write(c);
+    c= (d+b+1)/a;
     write(c);
     return 0;
 }

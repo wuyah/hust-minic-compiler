@@ -3,6 +3,7 @@
 void semantic_error(int line,char *msg1,char *msg2){
     //这里可以只收集错误信息，最后一次显示
     printf("在%d行,%s %s\n",line,msg1,msg2);
+    exit(-1);
 }
 
 char *strcat0(char *s1,char *s2){
@@ -104,15 +105,22 @@ void prnIR(struct codenode *head)
              sprintf(opnstr1,"#%d",h->opn1.const_int);
         if (h->opn1.kind==FLOAT)
              sprintf(opnstr1,"#%f",h->opn1.const_float);
-        if (h->opn1.kind==ID||h->opn1.kind==ARRAY_POINTER)
+        if (h->opn1.kind==ID)
              sprintf(opnstr1,"%s",h->opn1.id);
+        if(h->opn1.kind==ARRAY_POINTER)
+            sprintf(opnstr1,"*%s",h->opn1.id);
         if (h->opn2.kind==INT)
              sprintf(opnstr2,"#%d",h->opn2.const_int);
         if (h->opn2.kind==FLOAT)
              sprintf(opnstr2,"#%f",h->opn2.const_float);
-        if (h->opn2.kind==ID||h->opn2.kind==ARRAY_POINTER)
+        if(h->opn2.kind==ARRAY_POINTER)
+            sprintf(opnstr2,"*%s",h->opn2.id);
+        if (h->opn2.kind==ID)
              sprintf(opnstr2,"%s",h->opn2.id);
-        sprintf(resultstr,"%s",h->result.id);
+        if (h->result.kind==ID)
+            sprintf(resultstr,"%s",h->result.id);
+        else
+            sprintf(resultstr,"*%s",h->result.id);
         switch (h->op)
         {
             case ASSIGNOP:  printf("  %s := %s\n",resultstr,opnstr1);
@@ -191,7 +199,7 @@ void prnIR(struct codenode *head)
                            else
                                 printf("  RETURN\n");
                            break;
-            case ARRAY_POINTER:
+            case ARRAY_POINTER_ASSIGN:
                             printf("  %s -> %s[%s]\n", resultstr, opnstr1, opnstr2);
                             break;
         }
@@ -201,7 +209,7 @@ void prnIR(struct codenode *head)
 
 void prn_symbol(){ //显示符号表
     int i=0;
-    printf("%6s\t%6s\t%6s\t%6s\t%4s\t%6s\t%6s\n","变量名","别 名","层 号","类  型","标记","偏移量", "other_info");
+    printf("%6s\t%6s\t%6s\t%6s\t%4s\t%6s\t%6s\t%6s\n","变量名","别 名","层 号","类  型","标记","偏移量", "array_dim","parmamnum");
     for(i=0;i<symbolTable.index;i++)
     {
         char type[16];
@@ -234,6 +242,13 @@ void prn_symbol(){ //显示符号表
         {
             for(int j=0;j<symbolTable.symbols[i].arraylen->size;j++)
                 printf("%3d ", symbolTable.symbols[i].arraylen->data[j]);
+        } else{
+            printf("\t");
+        }
+        printf("\t");
+        if(symbolTable.symbols[i].paramnum>=0)
+        {
+            printf("%d",symbolTable.symbols[i].paramnum);
         }
         printf("\n");
     }

@@ -31,7 +31,7 @@ void arrayExp(ASTNode *T)
             semantic_error(T0->pos,"Fatal Error:", "Array's index_type isn't INT\n");
         vector_push_back(v, T0->Exp2->place);     
         T->width += T0->Exp2->width;
-        printf("T.width:%d\n", T->width);
+        // printf("T.width:%d\n", T->width);
         T->code = merge(2, T->code, T0->Exp2->code);
         T0 = T0->Exp1;
     }
@@ -57,11 +57,9 @@ void arrayExp(ASTNode *T)
             for(int i=0; i < v->size; i++)
             {
                 int var_pos = v->data[i];
-                printf("var pos = %d\n", var_pos);
                 // use a temp to save the immediate number
                 // Why T.width: all the node use one stack mem, if use T0, then the first temp1 can't be stored
                 int immediate_place = fill_Temp(newTemp(), LEV, INT, 'T', T->offset + T->width);
-                printf("T.offset:%d, T,width%d\n", T->offset, T->width);
                 T->width += 4;
                 opn1.kind = ID; opn1.type = INT; opn1.offset = symbolTable.symbols[immediate_place].offset;   
                 strcpy(opn1.id,symbolTable.symbols[immediate_place].alias);
@@ -76,7 +74,6 @@ void arrayExp(ASTNode *T)
                 // opn2
                 opn2.kind = ID; opn2.type = INT;
                 opn2.offset = symbolTable.symbols[var_pos].offset; 
-                printf("varpos,offsey = %d\n", opn2.offset);
                 strcpy(opn2.id, symbolTable.symbols[var_pos].alias);
                 // res
                 strcpy(result.id, symbolTable.symbols[mul_place].alias);
@@ -90,10 +87,9 @@ void arrayExp(ASTNode *T)
                 // merge IR
                 T->code = merge(2, T->code, genIR(PLUS, opn1, result, result));
 
-                // width add (No need, but temp to make symbol table more elegant)
                 store *= symbolTable.symbols[rtn].arraylen->data[i];
             }
-            printf("store = %d\n", offset);
+            // printf("store = %d\n", offset);
             // T->width += T0->width;
             // use a temp to save the result of the array call; IR fmt: temp := array_id[offset]
             int return_position = fill_Temp(newTemp(), LEV, ARRAY_POINTER, 'T', T->offset+T->width);
@@ -107,23 +103,14 @@ void arrayExp(ASTNode *T)
             strcpy(opn2.id, symbolTable.symbols[rtn].alias);
             result.kind = ID; result.type = INT; result.offset = symbolTable.symbols[offset_place].offset;
             strcpy(result.id, symbolTable.symbols[offset_place].alias);
-            T->code = merge(2, T->code, genIR(ARRAY_POINTER, opn2, result, opn1));
+            T->code = merge(2, T->code, genIR(ARRAY_POINTER_ASSIGN, opn2, result, opn1));
             
             T->place = return_position;         // save position
             T->kind = ARRAY_CALL;
-            /* TODO: a[b] := 0; c := a[b] we need to geenrate a pointer which -> the target mem
-               and then if we assign, we directly assign to the target
-               the resolution is when it comes like `temp9 -> v3[temp4]`
-               we assign the temp9's value to v3.offset + temp4.typeint. and this need to 
-               then when we use temp9 */
             
             // final IR h->op is ARRAY_POINTER result->kind==ARRAY_POINTER result
         }
     } else
-        semantic_error(T0->pos,"Fatal Error!", "Array Left Must be ID\n");
+        semantic_error(T0->pos,"Fatal Error:", "Array Left Must be ID\n");
     return;
 }
-/*  Array Call is a[0], so the T Node need to record  offset and all the node 
-    so there must be one IR like this "tmp_offset := tmp_offset + a" to calculate the offset
-    but then there must be one like this "arr[tmp_offset] := ..." or "opn := arr[tmp_offset]"
-*/

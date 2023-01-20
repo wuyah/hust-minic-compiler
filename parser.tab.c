@@ -191,8 +191,8 @@ enum yysymbol_kind_t
   YYSYMBOL_EXP_NEQ = 80,                   /* EXP_NEQ  */
   YYSYMBOL_ARRAY_CALL = 81,                /* ARRAY_CALL  */
   YYSYMBOL_ARRAY_DEC = 82,                 /* ARRAY_DEC  */
-  YYSYMBOL_ANNOTATION = 83,                /* ANNOTATION  */
-  YYSYMBOL_ARRAY_POINTER = 84,             /* ARRAY_POINTER  */
+  YYSYMBOL_ARRAY_POINTER = 83,             /* ARRAY_POINTER  */
+  YYSYMBOL_ARRAY_POINTER_ASSIGN = 84,      /* ARRAY_POINTER_ASSIGN  */
   YYSYMBOL_DMINUS_L = 85,                  /* DMINUS_L  */
   YYSYMBOL_DMINUS_R = 86,                  /* DMINUS_R  */
   YYSYMBOL_DPLUS_L = 87,                   /* DPLUS_L  */
@@ -648,11 +648,11 @@ static const char *const yytname[] =
   "IF_THEN_ELSE", "FUNC_CALL", "ARGS", "FUNCTION", "PARAM", "ARG", "CALL",
   "LABEL", "GOTO", "JLT", "JLE", "JGT", "JGE", "EQ", "NEQ", "EXP_JLT",
   "EXP_JLE", "EXP_JGT", "EXP_JGE", "EXP_EQ", "EXP_NEQ", "ARRAY_CALL",
-  "ARRAY_DEC", "ANNOTATION", "ARRAY_POINTER", "DMINUS_L", "DMINUS_R",
-  "DPLUS_L", "DPLUS_R", "UMINUS", "LOWER_THEN_ELSE", "$accept", "program",
-  "ExtDefList", "ExtDef", "Specifier", "ExtDecList", "FuncDec", "VarList",
-  "ParamDec", "CompSt", "StmList", "Stm", "DefList", "Def", "DecList",
-  "Dec", "VarDec", "Exp", "Args", YY_NULLPTR
+  "ARRAY_DEC", "ARRAY_POINTER", "ARRAY_POINTER_ASSIGN", "DMINUS_L",
+  "DMINUS_R", "DPLUS_L", "DPLUS_R", "UMINUS", "LOWER_THEN_ELSE", "$accept",
+  "program", "ExtDefList", "ExtDef", "Specifier", "ExtDecList", "FuncDec",
+  "VarList", "ParamDec", "CompSt", "StmList", "Stm", "DefList", "Def",
+  "DecList", "Dec", "VarDec", "Exp", "Args", YY_NULLPTR
 };
 
 static const char *
@@ -1467,8 +1467,8 @@ yyreduce:
   case 6: /* ExtDef: Specifier FuncDec CompSt  */
 #line 72 "parser.y"
                                      {(yyval.ptr)=(ASTNode *)malloc(sizeof(ASTNode)); (yyval.ptr)->kind=FUNC_DEF;  
-                                (yyval.ptr)->Specifier=(yyvsp[-2].ptr);(yyval.ptr)->FuncDec=(yyvsp[-1].ptr);(yyval.ptr)->Body=(yyvsp[0].ptr);
-		(yyval.ptr)->pos=(yyval.ptr)->Body->pos=(yyval.ptr)->Specifier->pos;  }
+                                        (yyval.ptr)->Specifier=(yyvsp[-2].ptr);(yyval.ptr)->FuncDec=(yyvsp[-1].ptr);(yyval.ptr)->Body=(yyvsp[0].ptr);
+		                        (yyval.ptr)->pos=(yyval.ptr)->Body->pos=(yyval.ptr)->Specifier->pos;  }
 #line 1473 "parser.tab.c"
     break;
 

@@ -21,7 +21,6 @@ void ir_ln_push(ir_listnode** p, codenode* ir)
         temp->next = *p;
         *p = temp;
     }
-    
 }
 
 codenode* ir_ln_pop(ir_listnode** p)

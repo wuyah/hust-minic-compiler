@@ -171,8 +171,10 @@ void display(struct ASTNode *T,int indent)
                     break;
     case BREAK:
                     printf("%*cBREAK Node!\n", indent, ' ');
+                    break;
     case CONTINUE:
                     printf("%*cCONTINUE Node!\n", indent, ' ');
+                    break;
         }
     }
 }

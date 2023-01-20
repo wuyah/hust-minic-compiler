@@ -1,10 +1,10 @@
 .data
 _Prompt: .asciiz "Enter an integer:  "
 _ret: .asciiz "\n"
-.globl main0
+.globl main
 .text
 main0:
-  addi $sp,$sp,-888
+  addi $sp,$sp,0
   jal main
   li $v0, 10
   syscall
@@ -33,24 +33,93 @@ writef:
   jr $ra
 
 main:
-  addi $sp, $sp, -32
+  addi $sp, $sp, -56
   li $t3, 1
   sw $t3, 16($sp)
-  lw $t1, 16($sp)
-  sw $t1, 12($sp)
-  li.s $f3, 1.200000
-  s.s $f3, 24($sp)
-  lw $t1, 24($sp)
-  sw $t1, 20($sp)
-  lw $a0, 20($sp)
-  mtc1 $a0, $f12
+  lw $t3, 16($sp)
+  sw $t3, 12($sp)
+  li $t3, 0
+  sw $t3, 32($sp)
+  li $t3, 1
+  sw $t3, 36($sp)
+  li $t3, 4
+  sw $t3, 40($sp)
+  lw $t1, 40($sp)
+  lw $t2, 36($sp)
+  mul $t3,$t1,$t2
+  sw $t3, 44($sp)
+  lw $t1, 44($sp)
+  lw $t2, 32($sp)
+  add $t3,$t1,$t2
+  sw $t3, 32($sp)
+  li $t1, 20
+  lw $t2, 32($sp)
+  add $t2, $t2, $t1
+  sw $t2, 48($sp)
+  li $t3, 3
+  sw $t3, 52($sp)
+  lw $t3, 52($sp)
+  lw $t1, 52($sp)
+  lw $t2, 48($sp)
+  add $t2, $t2, $sp
+  sw $t3, ($t2)
+  li $t3, 0
+  sw $t3, 32($sp)
+  li $t3, 1
+  sw $t3, 36($sp)
+  li $t3, 4
+  sw $t3, 40($sp)
+  lw $t1, 40($sp)
+  lw $t2, 36($sp)
+  mul $t3,$t1,$t2
+  sw $t3, 44($sp)
+  lw $t1, 44($sp)
+  lw $t2, 32($sp)
+  add $t3,$t1,$t2
+  sw $t3, 32($sp)
+  li $t1, 20
+  lw $t2, 32($sp)
+  add $t2, $t2, $t1
+  sw $t2, 48($sp)
+  lw $t1, 48($sp)
+  addu $t1, $t1, $sp
+  lw $t3, ($t1)
+  sw $t3, 52($sp)
+  lw $t4, 48($sp)
+  addu $t4, $t4, $sp
+  lw $t1, ($t4)
+  addi $t1, $t1, 1
+  lw $t2, 48($sp)
+  add $t2, $t2, $sp
+  sw $t1, ($t2)
+  li $t3, 0
+  sw $t3, 32($sp)
+  li $t3, 1
+  sw $t3, 36($sp)
+  li $t3, 4
+  sw $t3, 40($sp)
+  lw $t1, 40($sp)
+  lw $t2, 36($sp)
+  mul $t3,$t1,$t2
+  sw $t3, 44($sp)
+  lw $t1, 44($sp)
+  lw $t2, 32($sp)
+  add $t3,$t1,$t2
+  sw $t3, 32($sp)
+  li $t1, 20
+  lw $t2, 32($sp)
+  add $t2, $t2, $t1
+  sw $t2, 48($sp)
+  lw $t4, 48($sp)
+  add $t4, $t4, $sp
+  lw $a0, ($t4)
   addi $sp, $sp, -4
   sw $ra,0($sp)
-  jal writef
+  jal write
   lw $ra,0($sp)
   addi $sp, $sp, 4
   li $t3, 0
-  sw $t3, 28($sp)
-  lw $v0,28($sp)
+  sw $t3, 32($sp)
+  lw $v0,32($sp)
   jr $ra
 label1:

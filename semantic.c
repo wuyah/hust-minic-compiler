@@ -48,7 +48,7 @@ int match_param(int i,struct ASTNode *T)
         }
         type1=symbolTable.symbols[i+j].type;  //形参类型
         type2=T->Exp1->type;
-        if (type1!=type2){
+        if (type1!=type2 && (strcmp("write", symbolTable.symbols[i].name))){
             semantic_error(pos,"", "参数类型不匹配");
             return 0;
         }
@@ -239,7 +239,6 @@ void semantic_Analysis(struct ASTNode *T)
                             }
                             if(temp_arrNode->type==INT || temp_arrNode->type==FLOAT)
                                 width *= 4;
-                            printf("array width:%d\n", width);
                             // fill symbol table
                             // basic type + ARRAY_DEC makes type like int* float*...
                             rtn = fillSymbolTable(temp_arrNode->type_id,newAlias(),LEV,temp_arrNode->type+ARRAY_DEC,'V',T->offset);
@@ -248,14 +247,8 @@ void semantic_Analysis(struct ASTNode *T)
                             else {
                                 T0->Dec->place=rtn;
                                 symbolTable.symbols[rtn].arraylen = v;
-                                if(symbolTable.symbols[rtn].arraylen->size>0)
-                                {
-                                    printf("v INIT SUCCESS!\n");
-                                }
                             }   
                             T->width = width;
-                            printf("T->width width:%d\n", width);
-                            printf("array size:%d\n",symbolTable.symbols[rtn].arraylen->data[0]);
                         }
                     }else if (T0->Dec->kind==ID)
                     {
@@ -415,11 +408,11 @@ void semantic_Analysis(struct ASTNode *T)
             if(loop_scope==0)
                 semantic_error(T->pos, "", "break not in loop!");
             else
-                T->code = merge(2, T->code, ir_ln_top(continue_code_stack));
+                T->code = merge(2, T->code, ir_ln_top(break_code_stack));
             break;
     case CONTINUE:
             if(loop_scope==0)
-                semantic_error(T->pos, "", "break not in loop!");
+                semantic_error(T->pos, "", "continue not in loop!");
             else
                 T->code = merge(2, T->code, ir_ln_top(continue_code_stack));
             break;

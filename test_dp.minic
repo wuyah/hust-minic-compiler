@@ -1,0 +1,22 @@
+int main()
+{
+    int a[3];
+    int b;
+    a[1] = 0;
+    b = a[1]++;
+    write(a[1]);   //1
+    write(b);      //0
+    b = ++a[1];
+    write(a[1]);   //2
+    write(b);      //2
+    a[2] = 2;
+    b = a[2]--;
+    write(a[2]);  //1
+    write(b);     //2
+    b = --a[2];   
+    write(a[2]);  //0
+    write(b);     //0
+    b++;
+    write(b);     //1
+    return 0;
+}

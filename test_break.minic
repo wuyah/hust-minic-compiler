@@ -21,24 +21,5 @@ int main()
         i++;
     }
     write(i);
-
-    for(i=0;i<5;i++)
-    {
-        j = 0;
-        while(j<3)
-        {
-            j++;
-            if(j==2)
-            {
-                break;
-            }
-        }
-        write(j);
-        if(i==3)
-        {
-            break;
-        }
-    }
-    write(i);
     return 0;
 }

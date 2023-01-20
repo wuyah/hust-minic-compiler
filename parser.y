@@ -40,7 +40,7 @@
 /* token for exp relop */
 %token EXP_JLT EXP_JLE EXP_JGT EXP_JGE EXP_EQ EXP_NEQ
 /* token for array */
-%token ARRAY_CALL ARRAY_DEC ANNOTATION ARRAY_POINTER
+%token ARRAY_CALL ARRAY_DEC ARRAY_POINTER ARRAY_POINTER_ASSIGN
 /* token for dminus dplus */
 %token DMINUS_L DMINUS_R DPLUS_L DPLUS_R
 
@@ -70,8 +70,8 @@ ExtDefList: {$$=NULL;}
 ExtDef:   Specifier ExtDecList SEMI   {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=EXT_VAR_DEF;
                                $$->pos=yylineno;   $$->Specifier=$1;$$->DecList=$2;}                               //该结点对应外部声明
         | Specifier FuncDec CompSt   {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=FUNC_DEF;  
-                                $$->Specifier=$1;$$->FuncDec=$2;$$->Body=$3;
-		$$->pos=$$->Body->pos=$$->Specifier->pos;  }  //该结点对应一个函数定义
+                                        $$->Specifier=$1;$$->FuncDec=$2;$$->Body=$3;
+		                        $$->pos=$$->Body->pos=$$->Specifier->pos;  }  //该结点对应一个函数定义
         | error SEMI   {$$=NULL;}
         ;
 Specifier:  TYPE    {$$=(ASTNode *)malloc(sizeof(ASTNode)); $$->kind=TYPE;             //生成类型结点，目前仅基本类型
@@ -230,4 +230,5 @@ void yyerror(const char* fmt, ...)
     fprintf(stderr, "Grammar Error at Line %d Column %d: ", yylloc.first_line,yylloc.first_column);
     vfprintf(stderr, fmt, ap);
     fprintf(stderr, ".\n");
+    exit(-1);
 }

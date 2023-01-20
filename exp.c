@@ -2,8 +2,8 @@
 #include "vector.h"
 
 void arrayExp(ASTNode *T);
-void assignExp(ASTNode* T);
-void dminusplusExp(ASTNode* T);
+void assignExp(ASTNode *T);
+void dminusplusExp(ASTNode *T);
 
 void Exp(struct ASTNode *T)
 { // 处理基本表达式，参考文献[2]p82的思想
@@ -12,7 +12,7 @@ void Exp(struct ASTNode *T)
     struct opn opn1, opn2, result;
     vector *v;
     int op;
-    v = (vector*)malloc(sizeof(vector));
+    v = (vector *)malloc(sizeof(vector));
     vector_init(v, 1);
     if (T)
     {
@@ -83,37 +83,37 @@ void Exp(struct ASTNode *T)
             }
             else
             {
-                if(T->Exp1->kind==ID)
+                if (T->Exp1->kind == ID)
                     rtn = searchSymbolTable(T->Exp1->type_id);
                 else
                     rtn = T->Exp1->place;
 
                 int type = symbolTable.symbols[rtn].type;
-                if(type == INT && T->Exp2->type == FLOAT)
+                if (type == INT && T->Exp2->type == FLOAT)
                 {
                     semantic_error(T->pos, "", "assign type not match\n");
                 }
                 // ask a question
-                if(T->Exp1->type == FLOAT || T->Exp2->type == INT)
+                if (T->Exp1->type == FLOAT || T->Exp2->type == INT)
                 {
                     T->type = FLOAT;
-
-                } else
+                }
+                else
                     T->type = T->Exp1->type;
-                
+
                 T->width = T->Exp1->width + T->Exp2->width;
                 T->code = merge(2, T->Exp1->code, T->Exp2->code);
-                if(T->Exp2->kind==ARRAY_CALL)
+                if (T->Exp2->kind == ARRAY_CALL)
                     opn1.kind = ARRAY_POINTER; // 右值一定是个变量或常量生成的临时变量
-                else  
+                else
                     opn1.kind = ID;
-                    
-                // not add 
+
+                // not add
                 opn1.type = T->Exp2->type;
                 strcpy(opn1.id, symbolTable.symbols[T->Exp2->place].alias);
                 opn1.offset = symbolTable.symbols[T->Exp2->place].offset;
 
-                if(T->Exp1->kind==ARRAY_CALL)
+                if (T->Exp1->kind == ARRAY_CALL)
                     result.kind = ARRAY_POINTER;
                 else
                     result.kind = ID;
@@ -124,9 +124,9 @@ void Exp(struct ASTNode *T)
             }
             break;
         // TODO this part is used to calculate the boolExp's value
-        case AND:   
-        case OR:    
-        case RELOP: 
+        case AND:
+        case OR:
+        case RELOP:
             T->type = INT;
             T->Exp1->offset = T->offset;
             T->Exp2->offset = T->offset + T->Exp1->width;
@@ -134,12 +134,17 @@ void Exp(struct ASTNode *T)
             Exp(T->Exp2);
             // create Temp Symbol
             T->place = fill_Temp(newTemp(), LEV, T->type, 'T', T->offset + T->Exp1->width + T->Exp2->width);
-            opn1.kind = ID;
+            if (T->Exp1->kind == ARRAY_CALL)
+                opn1.kind = ARRAY_POINTER; // 右值一定是个变量或常量生成的临时变量
+            else
+                opn1.kind = ID;
             strcpy(opn1.id, symbolTable.symbols[T->Exp1->place].alias);
             opn1.type = T->Exp1->type;
             opn1.offset = symbolTable.symbols[T->Exp1->place].offset;
-
-            opn2.kind = ID;
+            if (T->Exp2->kind == ARRAY_CALL)
+                opn2.kind = ARRAY_POINTER; // 右值一定是个变量或常量生成的临时变量
+            else
+                opn2.kind = ID;
             strcpy(opn2.id, symbolTable.symbols[T->Exp2->place].alias);
             opn2.type = T->Exp2->type;
             opn2.offset = symbolTable.symbols[T->Exp2->place].offset;
@@ -172,41 +177,55 @@ void Exp(struct ASTNode *T)
         case DIV:
             T->Exp1->offset = T->offset;
             Exp(T->Exp1);
-            T->Exp2->offset= T->offset + T->Exp1->offset;
+            T->Exp2->offset = T->offset + T->Exp1->width;
             Exp(T->Exp2);
             // 判断T->Exp1，T->Exp2类型是否正确，可能根据运算符生成不同形式的代码，给T的type赋值
             // 下面的类型属性计算，没有考虑错误处理情况
             if (T->Exp1->type == FLOAT || T->Exp2->type == FLOAT)
-                T->type = FLOAT, T->width = T->Exp1->width + T->Exp2->width + 4;
+                T->type = FLOAT, T->width = T->Exp1->width + T->Exp2->width + 2;
             else
                 T->type = INT, T->width = T->Exp1->width + T->Exp2->width + 2;
             T->place = fill_Temp(newTemp(), LEV, T->type, 'T', T->offset + T->Exp1->width + T->Exp2->width);
-            opn1.kind = ID; opn1.type = T->Exp1->type;
+
+            if (T->Exp1->kind == ARRAY_CALL)
+                opn1.kind = ARRAY_POINTER; // 右值一定是个变量或常量生成的临时变量
+            else
+                opn1.kind = ID;
+            opn1.type = T->Exp1->type;
             strcpy(opn1.id, symbolTable.symbols[T->Exp1->place].alias);
             opn1.offset = symbolTable.symbols[T->Exp1->place].offset;
 
-            opn2.kind = ID; opn2.type = T->Exp2->type;
+            if (T->Exp2->kind == ARRAY_CALL)
+                opn2.kind = ARRAY_POINTER; // 右值一定是个变量或常量生成的临时变量
+            else
+                opn2.kind = ID;
+            opn2.type = T->Exp2->type;
             strcpy(opn2.id, symbolTable.symbols[T->Exp2->place].alias);
             opn2.offset = symbolTable.symbols[T->Exp2->place].offset;
-            result.kind = ID;   result.type = T->type;
+            result.kind = ID;
+            result.type = T->type;
             strcpy(result.id, symbolTable.symbols[T->place].alias);
             result.offset = symbolTable.symbols[T->place].offset;
             T->code = merge(3, T->Exp1->code, T->Exp2->code, genIR(T->kind, opn1, opn2, result));
             // T->width = T->Exp1->width + T->Exp2->width + (T->type == INT ? 4 : 8);
             T->width = T->Exp1->width + T->Exp2->width + 4;
             break;
-        //  Finished 
-        case NOT: 
+        //  Finished
+        case NOT:
             T->Exp1->offset = T->offset;
             T->kind = NOT;
             Exp(T->Exp1);
             T->place = fill_Temp(newTemp(), LEV, T->type, 'T', T->offset + T->Exp1->width);
-            opn1.kind = ID;
+            if (T->Exp1->kind == ARRAY_CALL)
+                opn1.kind = ARRAY_POINTER; // 右值一定是个变量或常量生成的临时变量
+            else
+                opn1.kind = ID;
             strcpy(opn1.id, symbolTable.symbols[T->Exp1->place].alias);
             opn1.type = T->Exp1->type;
             opn1.offset = symbolTable.symbols[T->Exp1->place].offset;
             strcpy(result.id, symbolTable.symbols[T->place].alias);
-            result.kind=ID; result.type = T->type;
+            result.kind = ID;
+            result.type = T->type;
             result.offset = symbolTable.symbols[T->place].offset;
             T->code = merge(2, T->Exp1->code, genIR(T->kind, opn1, opn2, result));
             T->width = T->Exp1->width + 4;
@@ -217,12 +236,16 @@ void Exp(struct ASTNode *T)
             Exp(T->Exp1);
             T->type = T->Exp1->type;
             T->place = fill_Temp(newTemp(), LEV, T->type, 'T', T->offset + T->Exp1->width);
-            opn1.kind = ID;
+            if (T->Exp1->kind == ARRAY_CALL)
+                opn1.kind = ARRAY_POINTER; // 右值一定是个变量或常量生成的临时变量
+            else
+                opn1.kind = ID;
             strcpy(opn1.id, symbolTable.symbols[T->Exp1->place].alias);
             opn1.type = T->Exp1->type;
             opn1.offset = symbolTable.symbols[T->Exp1->place].offset;
             strcpy(result.id, symbolTable.symbols[T->place].alias);
-            result.kind=ID; result.type = T->type;
+            result.kind = ID;
+            result.type = T->type;
             result.offset = symbolTable.symbols[T->place].offset;
             T->code = merge(2, T->Exp1->code, genIR(T->kind, opn1, opn2, result));
             T->width = T->Exp1->width + 4;
@@ -319,11 +342,12 @@ void boolExp(struct ASTNode *T)
             T->Exp1->offset = T->offset;
             Exp(T->Exp1);
             T->width = T->Exp1->width;
-            T->Exp2->offset = T->offset + T->width;
+            T->Exp2->offset = T->offset + T->Exp1->width;
             Exp(T->Exp2);
             if (T->width < T->Exp2->width)
                 T->width = T->Exp2->width;
-            if(T->Exp1->kind == ARRAY_CALL)
+                
+            if (T->Exp1->kind == ARRAY_CALL)
                 opn1.kind = ARRAY_POINTER;
             else
                 opn1.kind = ID;
@@ -331,7 +355,7 @@ void boolExp(struct ASTNode *T)
             strcpy(opn1.id, symbolTable.symbols[T->Exp1->place].alias);
             opn1.offset = symbolTable.symbols[T->Exp1->place].offset;
 
-            if(T->Exp2->kind == ARRAY_CALL)
+            if (T->Exp2->kind == ARRAY_CALL)
                 opn2.kind = ARRAY_POINTER;
             else
                 opn2.kind = ID;
@@ -391,72 +415,86 @@ void boolExp(struct ASTNode *T)
     }
 }
 
-
-void dminusplusExp(ASTNode* T)
-{    
+void dminusplusExp(ASTNode *T)
+{
     struct opn opn1, opn2, result;
     int rtn;
     T->Exp1->offset = T->offset;
-    rtn = searchSymbolTable(T->Exp1->type_id);
-    if(symbolTable.symbols[rtn].flag != 'V')
+    Exp(T->Exp1);
+    rtn = T->Exp1->place;
+
+    if (symbolTable.symbols[rtn].flag != 'V' && symbolTable.symbols[rtn].type != ARRAY_POINTER)
         semantic_error(T->pos, "", "DMINUS/DPLUS must with id");
-    else   
-        Exp(T->Exp1);
     T->width = T->Exp1->width;
-    if(T->Exp1->type != INT)
+    if (T->Exp1->type != INT)
         semantic_error(T->pos, "", "DMINUS/DPLUS type must be INT");
     int result_place;
 
     // L: a=a+1 b=a | R: b=a a=a+1
-    if(T->kind == DMINUS_R || T->kind == DPLUS_R)  // R
+    if (T->kind == DMINUS_R || T->kind == DPLUS_R) // R
     {
-        result_place = fill_Temp(newTemp(), LEV, T->Exp1->type,'T', T->offset + T->Exp1->width);
+        result_place = fill_Temp(newTemp(), LEV, T->Exp1->type, 'T', T->offset + T->Exp1->width);
         T->width += 4;
-        int instruction_kind = (T->kind==DMINUS_R)?DMINUS:DPLUS;
+        int instruction_kind = (T->kind == DMINUS_R) ? DMINUS : DPLUS;
         // use a temp symbol to save the Exp result as the end;
-        opn1.kind = ID; opn1.type = INT;
-        strcpy(opn1.id, symbolTable.symbols[T->Exp1->place].alias);
-        opn1.offset = symbolTable.symbols[T->Exp1->place].offset;
+        if (T->Exp1->kind == ARRAY_CALL)
+            opn1.kind = ARRAY_POINTER;
+        else
+            opn1.kind = ID;
+        opn1.type = INT;
+        strcpy(opn1.id, symbolTable.symbols[rtn].alias);
+        opn1.offset = symbolTable.symbols[rtn].offset;
 
-        result.kind = ID; result.type = INT; 
+        result.kind = ID;
+        result.type = INT;
         strcpy(result.id, symbolTable.symbols[result_place].alias);
         result.offset = symbolTable.symbols[result_place].offset;
         T->code = merge(2, T->Exp1->code, genIR(ASSIGNOP, opn1, opn2, result));
         T->place = result_place;
-
-        // then a = a + 1; (make the value of rtn symbol ++)
-        struct symbol target_symbol = symbolTable.symbols[rtn];
-        opn1.offset = target_symbol.offset;
-        opn1.kind = ID; opn1.type = target_symbol.type;
-        strcpy(opn1.id, target_symbol.alias);
-
+        
+        if (T->Exp1->kind == ARRAY_CALL)
+            opn1.kind = ARRAY_POINTER;
+        else
+            opn1.kind = ID;
+        opn1.type = INT;
+        strcpy(opn1.id, symbolTable.symbols[rtn].alias);
+        opn1.offset = symbolTable.symbols[rtn].offset;
         result = opn1;
-        T->code = merge(2, T->code, genIR(instruction_kind, opn1, opn2, result));
-    } else
+        T->code = merge(2, T->code, genIR(instruction_kind, opn1, opn2, opn1));
+    }
+    else
     {
-        int instruction_kind = T->kind==DMINUS_L?DMINUS:DPLUS;
+        int instruction_kind = T->kind == DMINUS_L ? DMINUS : DPLUS;
 
         // first a = a +/- 1; (make the rtn symbol ++)
         struct symbol target_symbol = symbolTable.symbols[rtn];
         opn1.offset = target_symbol.offset;
-        opn1.kind = ID; opn1.type = target_symbol.type;
+        if (T->Exp1->kind == ARRAY_CALL)
+            opn1.kind = ARRAY_POINTER;
+        else
+            opn1.kind = ID;
+        opn1.type = target_symbol.type;
         strcpy(opn1.id, target_symbol.alias);
 
         result = opn1;
         T->code = merge(2, T->Exp1->code, genIR(instruction_kind, opn1, opn2, result));
 
-        result_place = fill_Temp(newTemp(), LEV, T->Exp1->type,'T', T->offset + T->Exp1->width);
+        result_place = fill_Temp(newTemp(), LEV, T->Exp1->type, 'T', T->offset + T->Exp1->width);
         T->width += 4;
         // use a temp symbol to save the Exp result as the end;
-        opn1.kind = ID; opn1.type = INT;
+        if (T->Exp1->kind == ARRAY_CALL)
+            opn1.kind = ARRAY_POINTER;
+        else
+            opn1.kind = ID;
+        opn1.type = INT;
         strcpy(opn1.id, symbolTable.symbols[T->Exp1->place].alias);
         opn1.offset = symbolTable.symbols[T->Exp1->place].offset;
 
-        result.kind = ID; result.type = INT; 
+        result.kind = ID;
+        result.type = INT;
         strcpy(result.id, symbolTable.symbols[result_place].alias);
         result.offset = symbolTable.symbols[result_place].offset;
         T->code = merge(2, T->code, genIR(ASSIGNOP, opn1, opn2, result));
         T->place = result_place;
     }
-    
 }
