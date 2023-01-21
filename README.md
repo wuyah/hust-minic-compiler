@@ -40,14 +40,16 @@ current finished:
 - array dec/ array call ast finished 1.8
 - oneline comment finished using lex.l
 - read()/write() function can be called immediately
-- int array finished
+- int array finished (float also satisfied)
 - break / continue finished
-
-TODO:
 - DPLUS DMINUS calculate(they should only work for INT)
-- struct expression
-- type error in function return
 - AND OR operator(INT and FLOAT)
 - use ID to judge if the number is INT or FLOAT
+
+TODO:
+- struct expression
+- type error in function return
 - *= += /= -= 
 - %
+- ir optimization
+- reg optimization
